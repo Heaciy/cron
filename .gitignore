@@ -5,3 +5,4 @@ migrations/
 venv/
 */settings/develop.py
 db.sqlite3
+celerybeat-schedule
