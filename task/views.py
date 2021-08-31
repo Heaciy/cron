@@ -1,8 +1,9 @@
 import datetime
 import json
+from task.utils import serialize_result, serialize_task
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, resolve_url
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
@@ -35,7 +36,7 @@ def add_task(request):
         schedule, created = IntervalSchedule.objects.get_or_create(
             every=int(every), period=getattr(IntervalSchedule, period))
         print(schedule.id)
-        if not PeriodicTask.objects.filter(interval=schedule,task=task).exists():
+        if not PeriodicTask.objects.filter(interval=schedule, task=task).exists():
             PeriodicTask.objects.create(
                 interval=schedule,
                 name=task_name,
@@ -47,15 +48,37 @@ def add_task(request):
         print("PeriodicTask Already Exists")
         return JsonResponse({"state": "success"})
 
+
 @login_required
 def get_tasks(request):
+    """获取当前用户的所有Task"""
     if request.method == 'GET':
-        username = request.user.username
-        tasks = PeriodicTask.objects.filter(name__startswith=username)
+        tasks = PeriodicTask.objects.filter(
+            kwargs__icontains=f"\"uid\":{request.user.id}")
         print(tasks)
-    return JsonResponse({"state": "success"})
+        data = serialize_task(tasks)
+    return JsonResponse({"state": "success", "data": data})
 
-# @login_required
-# def get_result(request):
-#     if request.method == 'GET':
-        
+
+@login_required
+def get_results(request):
+    """获取当前用户的所有Result"""
+    if request.method == 'GET':
+        results = TaskResult.objects.filter(
+            task_kwargs__icontains=f"'uid': {request.user.id}")
+        data = serialize_result(results)
+    return JsonResponse({"state": "success", "data": data})
+
+
+# TODO: 直接使用中间件拦截
+@login_required
+def get_results_by_task(request):
+    """通过tid获取本用户所属的result"""
+    if request.method == 'GET':
+        results = TaskResult.objects.filter(
+            task_kwargs__icontains=f"'uid': {request.user.id}")\
+            .filter(
+            task_kwargs__icontains=f"'tid': {request.GET.get('tid')}")
+        print(results)
+        data = serialize_result(results)
+    return JsonResponse({"state": "success", "data": data})

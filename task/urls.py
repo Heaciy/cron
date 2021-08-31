@@ -1,10 +1,10 @@
-from os import name
 from django.urls import path
 from . import views
 
 urlpatterns = [
     path('dashboard/',views.dashboard,name='dashboard'),
+    path('', views.get_tasks, name='get_task'),
     path('add/', views.add_task, name='add_task'),
-    path('tasks/',views.get_tasks,name='get_task'),
-    # path('results/',)
+    path('results/',views.get_results,name='get_results'),
+    path('results_/', views.get_results_by_task, name='get_results_by_task')
 ]
