@@ -1,3 +1,4 @@
+import json
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from celery.exceptions import NotRegistered
 from cron import celery_app
@@ -38,3 +39,10 @@ def disable_periodic_task():
 
 def enable_periodic_task():
     pass
+
+def load_from_kwargs(obj, key):
+    # 使用getattr同时适配TaskResult和PeriodicTask
+    kwargs_str = getattr(obj, "task_kwargs") if hasattr(obj, "task_kwargs")\
+        else getattr(obj, "kwargs")
+    kwargs = json.loads(kwargs_str.strip("\"").replace('\'', '\"'))
+    return kwargs.get(key, None)
