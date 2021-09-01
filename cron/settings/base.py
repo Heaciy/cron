@@ -17,6 +17,10 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -110,6 +114,15 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    # “全局的”static，各app下的static其实也是“全局的”,STATICFILES_FINDERS一般会先查找这个里面的再查找各app里的，如有同名使用第一个找的
+    # 也可以是绝对路径如'/var/www/static',也可以设置为元组如("downloads", "/opt/webfiles/stats"),
+    BASE_DIR/'static',
+]
+if not DEBUG:
+    # 生产环境时需要: DEBUG = False, 在生产环境中使用collectstatic命令将全站的静态文件收集到该目录下
+    # 绝对路径如'/var/www/example.com/static/'
+    STATIC_ROOT = BASE_DIR/'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
