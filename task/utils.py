@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+from celery import current_app
 from typing import Dict, List
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from django_celery_results.models import TaskResult
@@ -55,6 +56,7 @@ def load_kwargs_from_str(str):
     kwargs = json.loads(str.strip("\"").replace('\'', '\"'))
     return kwargs
 
+
 def load_kwargs_from_str_safe(str):
     """去除kwargs中的uid和tid"""
     kwargs = load_kwargs_from_str(str)
@@ -63,6 +65,7 @@ def load_kwargs_from_str_safe(str):
     if 'tid' in kwargs:
         del kwargs['tid']
     return kwargs
+
 
 def load_args_from_str(str):
     """将args的str转化为json对象"""
@@ -95,6 +98,7 @@ def serialize_task(tasks: List[PeriodicTask]) -> List[Dict]:
     data = [{
         'name': task.name,
         'task': task.task,
+        'tid': task.id,
         'owner': str(task.owner),
         'interval': str(task.interval),
         'crontab': str(task.crontab),
@@ -107,3 +111,33 @@ def serialize_task(tasks: List[PeriodicTask]) -> List[Dict]:
     }
         for task in tasks]
     return data
+
+
+def dumps_kwargs_safe(kwargs):
+    return json.dumps(kwargs).replace(': ', ':').replace(', ', ',')
+
+def parse_data_form(data):
+    """从request.POST中解析出数据"""
+    data = json.loads(data.get('data'))
+    data = {
+        'name': data.get('name', None),
+        'task': data.get('task', None),
+        'every': data.get('every', None),
+        'period': data.get('period', None),
+        'args': data.get('args', list()),
+        'kwargs': data.get('kwargs', dict())
+    }
+    err = []
+    current_app.loader.import_default_modules()
+    if PeriodicTask.objects.filter(name=data['name']).exists():
+        err.append(f'Task name {data["name"]} already in use!')
+    if not data['task'] in current_app.tasks:
+        err.append(f'Task {data["task"]} not exist!')
+    if not data['period'] in ['DAYS', 'HOURS', 'MINUTES']:
+        err.append(f'Period {data["period"]} unqualified!')
+    if not isinstance(data['args'], list):
+        err.append(f'Args must be a list!')
+    if not isinstance(data['kwargs'], dict):
+        err.append(f'Kwargs must be a dict!')
+    valid = False if err and len(err) else True
+    return {'valid': valid, 'data': data, 'err': err}
