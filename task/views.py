@@ -1,8 +1,7 @@
 import datetime
 import json
 from celery import current_app
-from task.utils import load_args_from_str, serialize_result, serialize_task
-
+from task.utils import dumps_kwargs_safe, parse_data_form, serialize_result, serialize_task
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -119,3 +118,28 @@ def run_task(request):
                         task.apply_async(args=args, kwargs=kwargs, queue=queue)
                     return JsonResponse({'state': 'success'})
         return JsonResponse({'state': 'failed'})
+
+
+@login_required
+@csrf_exempt
+def add_interval_task(request):
+    if request.method == 'POST':
+        valid_data = parse_data_form(request.POST)
+        if valid_data.get('valid'):
+            data = valid_data.get('data')
+            schedule, _ = IntervalSchedule.objects.get_or_create(
+                every=int(data['every']), period=getattr(IntervalSchedule, data['period']))
+            kwargs = data['kwargs']
+            kwargs.update({'uid': request.user.id})
+            if not PeriodicTask.objects.filter(interval=schedule, task=data['task']).exists():
+                PeriodicTask.objects.create(
+                    interval=schedule,
+                    name=data['name'],
+                    task=data['task'],
+                    args=json.dumps(data['args']),
+                    kwargs=dumps_kwargs_safe(kwargs),
+                    expires=datetime.datetime.now() + datetime.timedelta(seconds=30)
+                )
+            return JsonResponse({'state': 'success'})
+        print(valid_data)
+        return JsonResponse({'state': 'failed', 'err': valid_data.get('err')})
