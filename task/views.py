@@ -1,6 +1,7 @@
 import datetime
 import json
-from task.utils import serialize_result, serialize_task
+from celery import current_app
+from task.utils import load_args_from_str, serialize_result, serialize_task
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -82,3 +83,39 @@ def get_results_by_task(request):
         print(results)
         data = serialize_result(results)
     return JsonResponse({"state": "success", "data": data})
+
+
+@login_required
+def enable_task(request):
+    if request.method == 'GET':
+        tid = request.GET.get('tid', None)
+        if tid:
+            task = PeriodicTask.objects.get(id=int(tid))
+            if task.owner == request.user:
+                task.enabled = not task.enabled
+                task.save()
+                print(task.enabled)
+                return JsonResponse({'state': 'success', 'enabled': task.enabled})
+        return JsonResponse({'state': 'failed'})
+
+
+@login_required
+def run_task(request):
+    if request.method == 'GET':
+        tid = request.GET.get('tid', None)
+        if tid:
+            task_obj = PeriodicTask.objects.get(id=int(tid))
+            # if task_obj.owner.id == request.user.id and task_obj.enabled == True:
+            if task_obj.owner == request.user:
+                current_app.loader.import_default_modules()
+                task = current_app.tasks.get(task_obj.task)
+                if task:
+                    args = json.loads(task_obj.args)
+                    kwargs = json.loads(task_obj.kwargs)
+                    queue = task_obj.queue
+                    if queue and len(queue):
+                        task.apply_async(args=args, kwargs=kwargs)
+                    else:
+                        task.apply_async(args=args, kwargs=kwargs, queue=queue)
+                    return JsonResponse({'state': 'success'})
+        return JsonResponse({'state': 'failed'})
