@@ -4,4 +4,5 @@ celery==5.1.2
 "celery[redis]"
 django-celery-beat
 django-celery-results
+django-ratelimit
 flower

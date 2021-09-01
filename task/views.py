@@ -1,6 +1,7 @@
 import datetime
 import json
 from celery import current_app
+from ratelimit.decorators import ratelimit
 from task.utils import dumps_kwargs_safe, parse_data_form, serialize_result, serialize_task
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -85,6 +86,7 @@ def get_results_by_task(request):
 
 
 @login_required
+@ratelimit(key='ip', rate='20/m')
 def enable_task(request):
     if request.method == 'GET':
         tid = request.GET.get('tid', None)
@@ -99,6 +101,7 @@ def enable_task(request):
 
 
 @login_required
+@ratelimit(key='ip', rate='20/m')
 def run_task(request):
     if request.method == 'GET':
         tid = request.GET.get('tid', None)
@@ -122,6 +125,7 @@ def run_task(request):
 
 @login_required
 @csrf_exempt
+@ratelimit(key='ip', rate='10/m')
 def add_interval_task(request):
     if request.method == 'POST':
         valid_data = parse_data_form(request.POST)
