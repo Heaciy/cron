@@ -51,25 +51,37 @@ def load_from_kwargs(obj, key):
 
 
 def load_kwargs_from_str(str):
+    """将kwargs的str转化为json对象"""
     kwargs = json.loads(str.strip("\"").replace('\'', '\"'))
     return kwargs
 
+def load_kwargs_from_str_safe(str):
+    """去除kwargs中的uid和tid"""
+    kwargs = load_kwargs_from_str(str)
+    if 'uid' in kwargs:
+        del kwargs['uid']
+    if 'tid' in kwargs:
+        del kwargs['tid']
+    return kwargs
 
 def load_args_from_str(str):
+    """将args的str转化为json对象"""
     args = json.loads(str.strip("\"").replace('\'', '\"'))
     return args
 
 
 def load_strftime_from_datetime(date_time):
+    """将datetime转换为strftime"""
     return datetime.strftime(date_time, '%Y-%m-%d %H:%M:%S')
 
 
 def serialize_result(results: List[TaskResult]) -> List[Dict]:
+    """手动序列化result"""
     data = [{'task_name': result.task_name,
              'task_obj': str(result.task_obj),
              'task_owner': str(result.owner),
              'task_args': load_args_from_str(result.task_args),
-             'task_kwargs': load_kwargs_from_str(result.task_kwargs),
+             'task_kwargs': load_kwargs_from_str_safe(result.task_kwargs),
              'status': result.status,
              'result': result.result,
              'date_done': load_strftime_from_datetime(result.date_done)
@@ -79,6 +91,7 @@ def serialize_result(results: List[TaskResult]) -> List[Dict]:
 
 
 def serialize_task(tasks: List[PeriodicTask]) -> List[Dict]:
+    """手动序列化task"""
     data = [{
         'name': task.name,
         'task': task.task,
@@ -86,7 +99,7 @@ def serialize_task(tasks: List[PeriodicTask]) -> List[Dict]:
         'interval': str(task.interval),
         'crontab': str(task.crontab),
         'args': load_args_from_str(task.args),
-        'kwargs': load_kwargs_from_str(task.kwargs),
+        'kwargs': load_kwargs_from_str_safe(task.kwargs),
         'enabled': str(task.enabled),
         'total_run_count': task.total_run_count,
         'date_changed': load_strftime_from_datetime(task.date_changed),
