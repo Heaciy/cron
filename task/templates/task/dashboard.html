@@ -70,7 +70,7 @@
     </nav>
     <div class="container">
         <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-            <h3><span class="badge badge-success btn" id="formBtn">New</span></h3>
+            <h3><button type="button" class="badge badge-success btn" id="add">New</button></h3>
             <form id='taskForm'>
                 <div class="form-row">
                     <div class="col">
@@ -110,7 +110,7 @@
             </form>
         </div>
         <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-            <h3><span class="badge badge-info btn" id="tasks">Tasks</span></h3>
+            <h3><button type="button" class="badge badge-info btn" id="tasks">Tasks</span></h3>
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
@@ -183,7 +183,7 @@
             </table>
         </div>
         <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-            <h3><span class="badge badge-warning btn" id="results">Results</span></h3>
+            <h3><button type="button" class="badge badge-warning btn" id="results">Results</span></h3>
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
@@ -265,10 +265,13 @@
     $("#results").click(() => load_result_table())
 
     function load_task_table() {
+        let taskBtn = $('#tasks')
+        taskBtn.attr("disabled", true)  // 关闭taskBtn按钮
         let tab = $('#tasksTab')
         let tbody = ""
         $.when(load_data(urls.tasks)).done(function (result) {
             data = result
+            taskBtn.attr("disabled", false)  // 恢复taskBtn按钮
             for (var index in data) {
                 var task = data[index]
                 let cb = `cb-${task.tid}`
@@ -282,7 +285,9 @@
             }
             tab.html(tbody)
             $("a.btn-test").click(function () {
+                $(this).addClass('disabled')  // 关闭test按钮
                 run_task($(this).attr('tid'))
+                $(this).removeClass('disabled')  // 开启test按钮
             });
             $("input:checkbox").change(function () {
                 if (this.checked) {
@@ -296,10 +301,13 @@
         })
     }
     function load_result_table() {
+        let resultBtn = $('#results')
+        resultBtn.attr("disabled", true)  // 关闭resultBtn按钮
         let tab = $('#resultsTab')
         let tbody = ""
         $.when(load_data(urls.results)).done(function (result) {
             data = result
+            resultBtn.attr("disabled", false)  // 恢复resultBtn按钮
             for (var index in data) {
                 var result = data[index]
                 let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${result.task_obj}</td><td>${result.task_name}</td><td>${JSON.stringify(result.task_args)}</td><td>${JSON.stringify(result.task_kwargs)}</td><td>${result.status}</td><td>${result.result}</td><td>${result.date_done}</td></tr>`
@@ -345,8 +353,6 @@
             task: $('#ftask').val(),
             every: parseInt($('#fevery').val()),
             period: period[parseInt($('#fperiod').val())],
-            // args: [JSON.parse($('#foption').val())].concat(Array.from(JSON.parse($('#fargs').val()))),
-            // kwargs: JSON.parse($('#fkwargs').val().replace(/'/g, '"')),
         }
         if (formData["name"].replace(/(^s*)|(s*$)/g, "").length == 0) {
             err.push("Task name cannot be null!")
@@ -377,9 +383,6 @@
         } else {
             data.valid = true
         }
-        // console.log(JSON.parse(JSON.stringify(data)))
-        // return JSON.stringify(data)
-        // console.log(data)
         return data
     }
     function clean_form() {
@@ -389,10 +392,11 @@
         $('#fkwargs').val('{}')
     }
     function add_interval_task() {
-        valied_data = parse_data_form()
+        let addBtn = $('#add')
+        addBtn.attr("disabled", true)
+        valied_data = parse_data_form() // 关闭add按钮
         if (valied_data.valid) {
             $.post(urls.add, { data: JSON.stringify(valied_data.data) }, function (result) {
-                // console.log(result)
                 if (result.state.toLowerCase() == "success") {
                     console.log("success")
                     alert(JSON.stringify("success"))
@@ -401,12 +405,16 @@
                     console.log("failed")
                     alert(JSON.stringify(result.err))
                 }
+                addBtn.attr("disabled", false)  // 恢复add按钮
+                load_task_table()  // 更新任务
             })
         } else {
             alert(JSON.stringify(valied_data.err))
         }
-
     }
+</script>
+<script>
+    setInterval(load_result_table, 1000 * 30)
 </script>
 
 </html>
