@@ -62,7 +62,7 @@ ROOT_URLCONF = 'cron.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/'templates'],  # “公共的”页面
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
