@@ -129,6 +129,9 @@ def parse_data_form(data):
     }
     err = []
     current_app.loader.import_default_modules()
+    # FIXME
+    # avaible_tasks = list(sorted(name for name in current_app.tasks
+    #                             if not name.startswith('celery.')))
     if PeriodicTask.objects.filter(name=data['name']).exists():
         err.append(f'Task name {data["name"]} already in use!')
     if not data['task'] in current_app.tasks:

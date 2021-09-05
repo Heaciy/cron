@@ -10,15 +10,19 @@ from django.views.decorators.csrf import csrf_exempt
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from django_celery_results.models import TaskResult
 
+
 @login_required
 def index(request):
     return redirect('dashboard')
+
 
 @login_required
 def dashboard(request):
     return render(request, 'task/dashboard.html')
 
 # TODO：设置一个通用的add_task
+
+
 @login_required
 @csrf_exempt
 def add_task(request):
@@ -91,6 +95,7 @@ def get_results_by_task(request):
 @login_required
 @ratelimit(key='ip', rate='20/m')
 def enable_task(request):
+    """激活/关闭用户所有的某个task"""
     if request.method == 'GET':
         tid = request.GET.get('tid', None)
         if tid:
@@ -106,6 +111,7 @@ def enable_task(request):
 @login_required
 @ratelimit(key='ip', rate='20/m')
 def run_task(request):  # FIXME: 改为task/run/1,或者post: task/run {tid=1}
+    """测试运行用户所属的某个task"""
     if request.method == 'GET':
         tid = request.GET.get('tid', None)
         if tid:
@@ -130,6 +136,7 @@ def run_task(request):  # FIXME: 改为task/run/1,或者post: task/run {tid=1}
 @csrf_exempt
 @ratelimit(key='ip', rate='10/m')
 def add_interval_task(request):
+    """添加interval任务"""
     if request.method == 'POST':
         valid_data = parse_data_form(request.POST)
         if valid_data.get('valid'):
@@ -153,14 +160,26 @@ def add_interval_task(request):
 
 
 @login_required
-@csrf_exempt
 @ratelimit(key='ip', rate='10/m')
-def delete_task(request): # FIXME: 改为task/delete/1, 或者post：task/delete {tid=1}
-    if request.method=='GET':
+def delete_task(request):  # FIXME: 改为task/delete/1, 或者post：task/delete {tid=1}
+    """删除当前用户所有的某个task"""
+    if request.method == 'GET':
         tid = request.GET.get('tid', None)
         if tid:
             task = PeriodicTask.objects.filter(id=tid).first()
             if task and task.owner == request.user:
                 task.delete()
-                return JsonResponse({'state':'success'})
-        return JsonResponse({'state':'failed'}) # TODO: 分类返回err:错误原因
+                return JsonResponse({'state': 'success'})
+        return JsonResponse({'state': 'failed'})  # TODO: 分类返回err:错误原因
+
+
+@login_required
+@ratelimit(key='ip', rate='10/m')
+def avaible_tasks(request):
+    """获取当前用户所有可用tasks"""
+    if request.method == 'GET':
+        current_app.loader.import_default_modules()
+        tasks = list(sorted(name for name in current_app.tasks
+                            if not name.startswith('celery.')))
+        # FIXME: 设置过滤列表/添加limit表 task-参数要求-权限(group/superuser/all)
+        return JsonResponse({'state': 'success', 'tasks': tasks})
