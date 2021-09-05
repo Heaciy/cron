@@ -105,7 +105,7 @@ def enable_task(request):
 
 @login_required
 @ratelimit(key='ip', rate='20/m')
-def run_task(request):
+def run_task(request):  # FIXME: 改为task/run/1,或者post: task/run {tid=1}
     if request.method == 'GET':
         tid = request.GET.get('tid', None)
         if tid:
@@ -150,3 +150,17 @@ def add_interval_task(request):
             return JsonResponse({'state': 'success'})
         print(valid_data)
         return JsonResponse({'state': 'failed', 'err': valid_data.get('err')})
+
+
+@login_required
+@csrf_exempt
+@ratelimit(key='ip', rate='10/m')
+def delete_task(request): # FIXME: 改为task/delete/1, 或者post：task/delete {tid=1}
+    if request.method=='GET':
+        tid = request.GET.get('tid', None)
+        if tid:
+            task = PeriodicTask.objects.filter(id=tid).first()
+            if task and task.owner == request.user:
+                task.delete()
+                return JsonResponse({'state':'success'})
+        return JsonResponse({'state':'failed'}) # TODO: 分类返回err:错误原因
