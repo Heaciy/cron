@@ -4,18 +4,21 @@ from celery import current_app
 from ratelimit.decorators import ratelimit
 from task.utils import dumps_kwargs_safe, parse_data_form, serialize_result, serialize_task
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from django_celery_results.models import TaskResult
 
+@login_required
+def index(request):
+    return redirect('dashboard')
 
 @login_required
 def dashboard(request):
     return render(request, 'task/dashboard.html')
 
-
+# TODO：设置一个通用的add_task
 @login_required
 @csrf_exempt
 def add_task(request):

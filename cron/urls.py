@@ -17,9 +17,11 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
+from task.views import index
 
 
 urlpatterns = [
+    path('', index, name='main'),
     path('admin/', admin.site.urls),
     path('task/', include('task.urls')),
 ]

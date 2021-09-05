@@ -70,7 +70,7 @@
     </nav>
     <div class="container">
         <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-            <h3><button type="button" class="badge badge-success btn" id="add">New</button></h3>
+            <h3><button type="button" class="badge badge-success btn" id="addBtn">New</button></h3>
             <form id='taskForm'>
                 <div class="form-row">
                     <div class="col">
@@ -110,7 +110,7 @@
             </form>
         </div>
         <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-            <h3><button type="button" class="badge badge-info btn" id="tasks">Tasks</span></h3>
+            <h3><button type="button" class="badge badge-info btn" id="tasksBtn">Tasks</span></h3>
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
@@ -183,7 +183,7 @@
             </table>
         </div>
         <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-            <h3><button type="button" class="badge badge-warning btn" id="results">Results</span></h3>
+            <h3><button type="button" class="badge badge-warning btn" id="resultsBtn">Results</span></h3>
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
@@ -261,8 +261,8 @@
         })
         return defer.promise()
     }
-    $("#tasks").click(() => load_task_table())
-    $("#results").click(() => load_result_table())
+    $("#tasksBtn").click(() => load_task_table())
+    $("#resultsBtn").click(() => load_result_table())
 
     function load_task_table() {
         let taskBtn = $('#tasks')
@@ -343,7 +343,7 @@
     }
 </script>
 <script>
-    $("#formBtn").click(() => add_interval_task())
+    $("#addBtn").click(() => add_interval_task())
     function parse_data_form() {
         period = { 1: "DAYS", 2: "HOURS", 4: "MINUTES" }
         err = []
@@ -393,8 +393,8 @@
     }
     function add_interval_task() {
         let addBtn = $('#add')
-        addBtn.attr("disabled", true)
-        valied_data = parse_data_form() // 关闭add按钮
+        addBtn.attr("disabled", true)  // 关闭add按钮
+        valied_data = parse_data_form()
         if (valied_data.valid) {
             $.post(urls.add, { data: JSON.stringify(valied_data.data) }, function (result) {
                 if (result.state.toLowerCase() == "success") {
@@ -410,6 +410,7 @@
             })
         } else {
             alert(JSON.stringify(valied_data.err))
+            addBtn.attr("disabled", false)  // 恢复add按钮
         }
     }
 </script>
