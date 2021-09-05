@@ -124,6 +124,7 @@
                         <th scope="col">description</th>
                         <th scope="col">Enabled</th>
                         <th scope="col">Test</th>
+                        <th scope="col">Delete</th>
                     </tr>
                 </thead>
                 <tbody id="tasksTab">
@@ -143,6 +144,7 @@
                             </div>
                         </td>
                         <td><a class="btn btn-sm btn-outline-success btn-test py-0" tid=1 href="#">test</a></td>
+                        <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
                     </tr>
                     <tr>
                         <th scope="row">
@@ -161,6 +163,7 @@
                             </div>
                         </td>
                         <td><a class="btn btn-sm btn-outline-success py-0" href="#">test</a></td>
+                        <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
                     </tr>
                     <tr>
                         <th scope="row">3</th>
@@ -178,6 +181,7 @@
                             </div>
                         </td>
                         <td><a class="btn btn-sm btn-outline-success py-0" href="#">test</a></td>
+                        <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
                     </tr>
                 </tbody>
             </table>
@@ -233,6 +237,26 @@
             </table>
         </div>
     </div>
+    <!-- modal提示框 -->
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 <script type="text/javascript">
     let urls = {
@@ -240,7 +264,8 @@
         tasks: '{% url "get_task" %}',
         results: '{% url "get_results" %}',
         runTask: '{% url "run_task" %}',
-        enableTask: '{% url "enable_task" %}'
+        enableTask: '{% url "enable_task" %}',
+        delTask: '{% url "delete_task" %}',
     }
     var data
     function load_data(apiStr) {
@@ -280,7 +305,7 @@
                     enable = `<td><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" tid=${task.tid} id=${cb} checked><label class="custom-control-label" for=${cb}></label></div></td>`
                 }
                 // let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${task.name}</td><td>${task.task}</td><td>${JSON.stringify(task.args)}</td><td>${JSON.stringify(task.kwargs)}</td><td>${task.total_run_count}</td><td>${task.date_changed}</td><td>${task.description}</td><td>${task.enabled}</td><td><a class="btn btn-sm btn-outline-success py-0 btn-test" tid=${task.tid} href="#">test</a></td></tr>`
-                let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${task.name}</td><td>${task.task}</td><td>${JSON.stringify(task.args)}</td><td>${JSON.stringify(task.kwargs)}</td><td>${task.total_run_count}</td><td>${task.date_changed}</td><td>${task.description}</td>${enable}<td><a class="btn btn-sm btn-outline-success py-0 btn-test" tid=${task.tid} href="#">test</a></td></tr>`
+                let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${task.name}</td><td>${task.task}</td><td>${JSON.stringify(task.args)}</td><td>${JSON.stringify(task.kwargs)}</td><td>${task.total_run_count}</td><td>${task.date_changed}</td><td>${task.description}</td>${enable}<td><a class="btn btn-sm btn-outline-success py-0 btn-test" tid=${task.tid} href="#">test</a></td><td><a class="btn btn-sm btn-outline-danger py-0 btn-del" tid=${task.tid} href="#">test</a></td></tr>`
                 tbody += rowEle
             }
             tab.html(tbody)
@@ -288,6 +313,11 @@
                 $(this).addClass('disabled')  // 关闭test按钮
                 run_task($(this).attr('tid'))
                 $(this).removeClass('disabled')  // 开启test按钮
+            });
+            $("a.btn-del").click(function () {
+                $(this).addClass('disabled')  // 关闭del按钮
+                del_task($(this).attr('tid'))
+                $(this).removeClass('disabled')  // 开启del按钮
             });
             $("input:checkbox").change(function () {
                 if (this.checked) {
@@ -319,6 +349,17 @@
     window.onload = () => { load_task_table(); load_result_table(); }
 </script>
 <script>
+    function enable_task(tid_) {
+        $.get(urls.enableTask, { tid: tid_ },
+            function (result) {
+                console.log(result)
+                if (result.state.toLowerCase() == "success") {
+                    alert(result.state)
+                } else {
+                    alert(result.state)
+                }
+            });
+    }
     function run_task(tid_) {
         $.get(urls.runTask, { tid: tid_ },
             function (result) {
@@ -330,16 +371,18 @@
                 }
             });
     }
-    function enable_task(tid_) {
-        $.get(urls.enableTask, { tid: tid_ },
+    function del_task(tid_) {
+        if(confirm("确认要删除？")){
+            $.get(urls.delTask, { tid: tid_ },
             function (result) {
-                console.log(result)
                 if (result.state.toLowerCase() == "success") {
                     alert(result.state)
+                    load_task_table() // 重新加载task table
                 } else {
                     alert(result.state)
                 }
-            });
+            })
+        }
     }
 </script>
 <script>
