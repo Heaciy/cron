@@ -127,7 +127,7 @@ text-decoration: none;
         // 把按钮变灰
         $(this).addClass('disabled');
         $(this).attr('disabled', true);
-        var time = 5; // 两封邮件的间隔时间
+        var time = 30; // 两封邮件的间隔时间
         $(this).text(time + 's');
         var interval = setInterval(() => {
             if (time <= 0) {
