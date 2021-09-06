@@ -113,8 +113,18 @@ def serialize_task(tasks: List[PeriodicTask]) -> List[Dict]:
     return data
 
 
+def serialize_avl_task(tasks) -> List[Dict]:
+    data = [{
+        'name': task.name,
+        'task': task.task,
+        'discription': task.description,
+    } for task in tasks]
+    return data
+
+
 def dumps_kwargs_safe(kwargs):
     return json.dumps(kwargs).replace(': ', ':').replace(', ', ',')
+
 
 def parse_data_form(data):
     """从request.POST中解析出数据"""

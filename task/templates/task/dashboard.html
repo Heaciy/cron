@@ -12,15 +12,10 @@
                     <input type="text" class="form-control" placeholder="Name" id="fname" required>
                 </div>
                 <div class="col">
-                    <select class="form-control" id="ftask" disabled>
-                        <option selected value="task.tasks.add" selected>DailyCP</option>
-                    </select>
-                </div>
-                <div class="col">
                     <select class="form-control" id="foption">
-                        <option selected value="1">task0</option>
-                        <option value="2">task1</option>
-                        <option value="4">task2</option>
+                        <option selected value="1">task.task</option>
+                        <option value="2">task.task</option>
+                        <option value="4">task.task</option>
                         <!-- <option value="4">通知</option> -->
                     </select>
                 </div>
@@ -327,7 +322,7 @@
             err.push("Period cannot be null!")
         }
         try {
-            formData.args = [JSON.parse($('#foption').val())].concat(Array.from(JSON.parse($('#fargs').val())))
+            formData.args = Array.from(JSON.parse($('#fargs').val()))
         } catch (e) {
             err.push("Args must be a list!")
         }
@@ -348,7 +343,7 @@
     function clean_form() {
         $('#fname').val('')
         $('#fevery').val('')
-        $('#foption').val('[]')
+        $('#fargs').val('[]')
         $('#fkwargs').val('{}')
     }
     function add_interval_task() {
@@ -382,7 +377,7 @@
                 let tasks = result.data
                 opotions = ''
                 for(var index in tasks){
-                    rowEle = `<option value=${JSON.stringify(tasks[index])}>${tasks[index]}</option>`
+                    rowEle = `<option value=${JSON.stringify(tasks[index]['task'])}>${tasks[index]['name']}</option>`
                     opotions+=rowEle
                 }
                 $("#foption").html(opotions)

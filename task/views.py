@@ -1,8 +1,9 @@
 import datetime
 import json
+from .models import AvlTask
 from celery import current_app
 from ratelimit.decorators import ratelimit
-from task.utils import dumps_kwargs_safe, parse_data_form, serialize_result, serialize_task
+from task.utils import dumps_kwargs_safe, parse_data_form, serialize_avl_task, serialize_result, serialize_task
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
@@ -178,8 +179,8 @@ def delete_task(request):  # FIXME: 改为task/delete/1, 或者post：task/delet
 def avaible_tasks(request):
     """获取当前用户所有可用tasks"""
     if request.method == 'GET':
-        current_app.loader.import_default_modules()
-        tasks = list(sorted(name for name in current_app.tasks
-                            if not name.startswith('celery.')))
+        all_tasks = AvlTask.objects.all()
+        avl_tasks = [task for task in all_tasks if not task.groups.all() or request.user.groups.all() & task.groups.all()]
+        tasks = serialize_avl_task(avl_tasks)
         # FIXME: 设置过滤列表/添加limit表 task-参数要求-权限(group/superuser/all)
         return JsonResponse({'state': 'success', 'data': tasks})
