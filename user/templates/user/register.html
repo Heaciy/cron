@@ -2,6 +2,144 @@
 
 {% block title %}Register{% endblock %}
 
-{% block content %}{% endblock %}
+{% block style %}
+.login-container{
+margin-top: 5%;
+margin-bottom: 5%;
+}
+.login-form-1{
+padding: 5%;
+box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+}
+.login-form-1 h3{
+text-align: center;
+color: #333;
+}
+.login-form-2{
+padding: 5%;
+background: #0062cc;
+box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+}
+.login-form-2 h3{
+text-align: center;
+color: #fff;
+}
+.login-container form{
+padding: 10%;
+}
+.btnSubmit
+{
+width: 50%;
+border-radius: 1rem;
+padding: 1.5%;
+border: none;
+cursor: pointer;
+}
+.login-form-1 .btnSubmit{
+font-weight: 600;
+color: #fff;
+background-color: #0062cc;
+}
+.login-form-2 .btnSubmit{
+font-weight: 600;
+color: #0062cc;
+background-color: #fff;
+}
+.login-form-2 .ForgetPwd{
+color: #fff;
+font-weight: 600;
+text-decoration: none;
+}
+.login-form-1 .ForgetPwd{
+color: #0062cc;
+font-weight: 600;
+text-decoration: none;
+}
+{% endblock %}
 
-{% block script_extends %}{% endblock %}
+{% block content %}
+<div class="container login-container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 login-form-2">
+            <h3>Register for Crontab</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ reg_form.username }}
+                </div>
+                <p class="text-danger">{{ reg_form.username.errors.as_text }}</p>
+                <div class="form-group">
+                    {{ reg_form.email }}
+                </div>
+                <p id="tip" class="text-danger">{{ reg_form.email.errors.as_text }}</p>
+                <div class="form-group">
+                    {{ reg_form.password }}
+                </div>
+                <p class="text-danger">{{ reg_form.password.errors.as_text }}</p>
+                <div class="form-group">
+                    {{ reg_form.password_confirm }}
+                </div>
+                <p class="text-danger">{{ reg_form.password_confirm.errors.as_text }}</p>
+                <div class="form-group row">
+                    <div class="col-md-8">
+                        {{ reg_form.verification_code }}
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-success" id="send_code">Send</button>
+                    </div>
+                </div>
+                <p class="text-danger">{{ reg_form.verification_code.errors.as_text }}</p>
+                <div class="form-group">
+                    <input type="submit" class="btnSubmit" value="Register" />
+                </div>
+                <div class="form-group">
+                    <a href="{% url 'login' %}" class="ForgetPwd" value="Login">Already have an account?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extends %}
+<script>
+    $("#send_code").click(function () {
+        var email = $("#id_email").val();
+        if (email == "") {
+            $("#tip").text('* 邮箱不能为空');
+            return false;
+        }
+        // 使用ajax发送验证码
+        $.ajax({
+            url: "{% url 'get_captcha' %}",
+            type: "GET",
+            data: {
+                'email': email,
+                'send_for': 'register'
+            },
+            cache: false,
+            success: function (data) {
+                if (data['state'] == 'failed') {
+                    alert(data['state']);
+                }
+            }
+        });
+        // 把按钮变灰
+        $(this).addClass('disabled');
+        $(this).attr('disabled', true);
+        var time = 5; // 两封邮件的间隔时间
+        $(this).text(time + 's');
+        var interval = setInterval(() => {
+            if (time <= 0) {
+                clearInterval(interval);
+                $(this).removeClass('disabled');
+                $(this).attr('disabled', false);
+                $(this).text('Send');
+                return false;
+            }
+            time--;
+            $(this).text(time + 's');
+        }, 1000);
+    })
+</script>
+{% endblock %}

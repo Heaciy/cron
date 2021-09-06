@@ -222,7 +222,7 @@
                     enable = `<td><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" tid=${task.tid} id=${cb} checked><label class="custom-control-label" for=${cb}></label></div></td>`
                 }
                 // let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${task.name}</td><td>${task.task}</td><td>${JSON.stringify(task.args)}</td><td>${JSON.stringify(task.kwargs)}</td><td>${task.total_run_count}</td><td>${task.date_changed}</td><td>${task.description}</td><td>${task.enabled}</td><td><a class="btn btn-sm btn-outline-success py-0 btn-test" tid=${task.tid} href="#">test</a></td></tr>`
-                let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${task.name}</td><td>${task.task}</td><td>${JSON.stringify(task.args)}</td><td>${JSON.stringify(task.kwargs)}</td><td>${task.total_run_count}</td><td>${task.date_changed}</td><td>${task.description}</td>${enable}<td><a class="btn btn-sm btn-outline-success py-0 btn-test" tid=${task.tid} href="#">test</a></td><td><a class="btn btn-sm btn-outline-danger py-0 btn-del" tid=${task.tid} href="#">test</a></td></tr>`
+                let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${task.name}</td><td>${task.task}</td><td>${JSON.stringify(task.args)}</td><td>${JSON.stringify(task.kwargs)}</td><td>${task.total_run_count}</td><td>${task.date_changed}</td><td>${task.description}</td>${enable}<td><a class="btn btn-sm btn-outline-success py-0 btn-test" tid=${task.tid} href="#">test</a></td><td><a class="btn btn-sm btn-outline-danger py-0 btn-del" tid=${task.tid} href="#">del</a></td></tr>`
                 tbody += rowEle
             }
             tab.html(tbody)

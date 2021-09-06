@@ -55,7 +55,6 @@ color: #0062cc;
 font-weight: 600;
 text-decoration: none;
 }
-
 {% endblock %}
 
 {% block content %}
@@ -75,8 +74,13 @@ text-decoration: none;
                 <div class="form-group">
                     <input type="submit" class="btnSubmit" value="Login" />
                 </div>
-                <div class="form-group">
-                    <a href="#" class="ForgetPwd" value="Login">Forget Password?</a>
+                <div class="form-group row">
+                    <div class="col-md-5">
+                        <a href="{% url 'register' %}" class="ForgetPwd" value="Login">Register for free</a>
+                    </div>
+                    <div class="col-md-5 ml-auto">
+                        <a href="#" class="ForgetPwd" value="Login">Forget Password?</a>
+                    </div>
                 </div>
             </form>
         </div>
