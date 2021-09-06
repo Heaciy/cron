@@ -182,4 +182,4 @@ def avaible_tasks(request):
         tasks = list(sorted(name for name in current_app.tasks
                             if not name.startswith('celery.')))
         # FIXME: 设置过滤列表/添加limit表 task-参数要求-权限(group/superuser/all)
-        return JsonResponse({'state': 'success', 'tasks': tasks})
+        return JsonResponse({'state': 'success', 'data': tasks})

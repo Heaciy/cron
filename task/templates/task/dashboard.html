@@ -3,175 +3,175 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-            <h3><button type="button" class="badge badge-success btn" id="addBtn">New</button></h3>
-            <form id='taskForm'>
-                <div class="form-row">
-                    <div class="col">
-                        <input type="text" class="form-control" placeholder="Name" id="fname" required>
-                    </div>
-                    <div class="col">
-                        <select class="form-control" id="ftask" disabled>
-                            <option selected value="task.tasks.add" selected>DailyCP</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <select class="form-control" id="foption">
-                            <option selected value="1">签到</option>
-                            <option value="2">填表</option>
-                            <option value="4">查寝</option>
-                            <!-- <option value="4">通知</option> -->
-                        </select>
-                    </div>
-                    <div class="col">
-                        <input type="text" class="form-control" placeholder="Number of Periods" id="fevery" value="1"
-                            required>
-                    </div>
-                    <div class="col">
-                        <select class="form-control" id="fperiod" placeholder="Interval Period">
-                            <option value="1">Days</option>
-                            <option value="2">Hours</option>
-                            <option value="4">Minutes</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <input type="text" class="form-control" placeholder="Args" id="fargs" value="[]">
-                    </div>
-                    <div class="col">
-                        <input type="text" class="form-control" placeholder="Kwargs" id="fkwargs" value="{}">
-                    </div>
+<div class="container">
+    <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
+        <h3><button type="button" class="badge badge-success btn" id="addBtn">New</button></h3>
+        <form id='taskForm'>
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Name" id="fname" required>
                 </div>
-            </form>
-        </div>
-        <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-            <h3><button type="button" class="badge badge-info btn" id="tasksBtn">Tasks</span></h3>
-            <table class="table">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Task</th>
-                        <th scope="col">Args</th>
-                        <th scope="col">Kwargs</th>
-                        <th scope="col">Count</th>
-                        <th scope="col">Update</th>
-                        <th scope="col">description</th>
-                        <th scope="col">Enabled</th>
-                        <th scope="col">Test</th>
-                        <th scope="col">Delete</th>
-                    </tr>
-                </thead>
-                <tbody id="tasksTab">
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>task.name</td>
-                        <td>task.task.generic</td>
-                        <td>[]</td>
-                        <td>{}</td>
-                        <td>32</td>
-                        <td>2021-09-01 12:46:31</td>
-                        <td>generic task</td>
-                        <td>
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="cb1">
-                                <label class="custom-control-label" for="cb1"></label>
-                            </div>
-                        </td>
-                        <td><a class="btn btn-sm btn-outline-success btn-test py-0" tid=1 href="#">test</a></td>
-                        <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            </script>2</th>
-                        <td>task.name</td>
-                        <td>task.task.generic</td>
-                        <td>[]</td>
-                        <td>{}</td>
-                        <td>32</td>
-                        <td>2021-09-01 12:46:31</td>
-                        <td>generic task</td>
-                        <td>
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="cb2">
-                                <label class="custom-control-label" for="cb2"></label>
-                            </div>
-                        </td>
-                        <td><a class="btn btn-sm btn-outline-success py-0" href="#">test</a></td>
-                        <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>task.name</td>
-                        <td>task.task.generic</td>
-                        <td>[]</td>
-                        <td>{}</td>
-                        <td>32</td>
-                        <td>2021-09-01 12:46:31</td>
-                        <td>generic task</td>
-                        <td>
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="cb3">
-                                <label class="custom-control-label" for="cb3"></label>
-                            </div>
-                        </td>
-                        <td><a class="btn btn-sm btn-outline-success py-0" href="#">test</a></td>
-                        <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-            <h3><button type="button" class="badge badge-warning btn" id="resultsBtn">Results</span></h3>
-            <table class="table">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Task</th>
-                        <th scope="col">Args</th>
-                        <th scope="col">Kwargs</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Result</th>
-                        <th scope="col">Date</th>
-    
-                    </tr>
-                </thead>
-                <tbody id="resultsTab">
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>task.name</td>
-                        <td>task.task.generic</td>
-                        <td>[]</td>
-                        <td>{}</td>
-                        <td>SUCCESS</td>
-                        <td>None</td>
-                        <td>2021-08-31 15:36:44</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>task.name</td>
-                        <td>task.task.generic</td>
-                        <td>[]</td>
-                        <td>{}</td>
-                        <td>SUCCESS</td>
-                        <td>None</td>
-                        <td>2021-08-31 15:36:44</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>task.name</td>
-                        <td>task.task.generic</td>
-                        <td>[]</td>
-                        <td>{}</td>
-                        <td>SUCCESS</td>
-                        <td>None</td>
-                        <td>2021-08-31 15:36:44</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                <div class="col">
+                    <select class="form-control" id="ftask" disabled>
+                        <option selected value="task.tasks.add" selected>DailyCP</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <select class="form-control" id="foption">
+                        <option selected value="1">task0</option>
+                        <option value="2">task1</option>
+                        <option value="4">task2</option>
+                        <!-- <option value="4">通知</option> -->
+                    </select>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Number of Periods" id="fevery" value="1"
+                        required>
+                </div>
+                <div class="col">
+                    <select class="form-control" id="fperiod" placeholder="Interval Period">
+                        <option value="1">Days</option>
+                        <option value="2">Hours</option>
+                        <option value="4">Minutes</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Args" id="fargs" value="[]">
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Kwargs" id="fkwargs" value="{}">
+                </div>
+            </div>
+        </form>
     </div>
+    <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
+        <h3><button type="button" class="badge badge-info btn" id="tasksBtn">Tasks</span></h3>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Task</th>
+                    <th scope="col">Args</th>
+                    <th scope="col">Kwargs</th>
+                    <th scope="col">Count</th>
+                    <th scope="col">Update</th>
+                    <th scope="col">description</th>
+                    <th scope="col">Enabled</th>
+                    <th scope="col">Test</th>
+                    <th scope="col">Delete</th>
+                </tr>
+            </thead>
+            <tbody id="tasksTab">
+                <tr>
+                    <th scope="row">1</th>
+                    <td>task.name</td>
+                    <td>task.task.generic</td>
+                    <td>[]</td>
+                    <td>{}</td>
+                    <td>32</td>
+                    <td>2021-09-01 12:46:31</td>
+                    <td>generic task</td>
+                    <td>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="cb1">
+                            <label class="custom-control-label" for="cb1"></label>
+                        </div>
+                    </td>
+                    <td><a class="btn btn-sm btn-outline-success btn-test py-0" tid=1 href="#">test</a></td>
+                    <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        </script>2</th>
+                    <td>task.name</td>
+                    <td>task.task.generic</td>
+                    <td>[]</td>
+                    <td>{}</td>
+                    <td>32</td>
+                    <td>2021-09-01 12:46:31</td>
+                    <td>generic task</td>
+                    <td>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="cb2">
+                            <label class="custom-control-label" for="cb2"></label>
+                        </div>
+                    </td>
+                    <td><a class="btn btn-sm btn-outline-success py-0" href="#">test</a></td>
+                    <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td>task.name</td>
+                    <td>task.task.generic</td>
+                    <td>[]</td>
+                    <td>{}</td>
+                    <td>32</td>
+                    <td>2021-09-01 12:46:31</td>
+                    <td>generic task</td>
+                    <td>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="cb3">
+                            <label class="custom-control-label" for="cb3"></label>
+                        </div>
+                    </td>
+                    <td><a class="btn btn-sm btn-outline-success py-0" href="#">test</a></td>
+                    <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
+        <h3><button type="button" class="badge badge-warning btn" id="resultsBtn">Results</span></h3>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Task</th>
+                    <th scope="col">Args</th>
+                    <th scope="col">Kwargs</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Result</th>
+                    <th scope="col">Date</th>
+
+                </tr>
+            </thead>
+            <tbody id="resultsTab">
+                <tr>
+                    <th scope="row">1</th>
+                    <td>task.name</td>
+                    <td>task.task.generic</td>
+                    <td>[]</td>
+                    <td>{}</td>
+                    <td>SUCCESS</td>
+                    <td>None</td>
+                    <td>2021-08-31 15:36:44</td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>task.name</td>
+                    <td>task.task.generic</td>
+                    <td>[]</td>
+                    <td>{}</td>
+                    <td>SUCCESS</td>
+                    <td>None</td>
+                    <td>2021-08-31 15:36:44</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td>task.name</td>
+                    <td>task.task.generic</td>
+                    <td>[]</td>
+                    <td>{}</td>
+                    <td>SUCCESS</td>
+                    <td>None</td>
+                    <td>2021-08-31 15:36:44</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
 
 {% block script_extends %}
@@ -183,8 +183,9 @@
         runTask: '{% url "run_task" %}',
         enableTask: '{% url "enable_task" %}',
         delTask: '{% url "delete_task" %}',
+        avlTask: '{% url "avaible_tasks" %}',
     }
-    var data
+    // var data
     function load_data(apiStr) {
         var defer = $.Deferred()
         $.ajax({
@@ -263,7 +264,6 @@
             tab.html(tbody)
         })
     }
-    window.onload = () => { load_task_table(); load_result_table(); }
 </script>
 <script>
     function enable_task(tid_) {
@@ -375,6 +375,26 @@
     }
 </script>
 <script>
+    function load_available_tasks() {
+        $.get(urls.avlTask, function (result) {
+            console.log(result)
+            if (result.state.toLowerCase() == "success") {
+                let tasks = result.data
+                opotions = ''
+                for(var index in tasks){
+                    rowEle = `<option value=${JSON.stringify(tasks[index])}>${tasks[index]}</option>`
+                    opotions+=rowEle
+                }
+                $("#foption").html(opotions)
+                console.log(tasks)
+            } else {
+                alert(result.state)
+            }
+        })
+    }
+</script>
+<script>
+    window.onload = () => { load_available_tasks(); load_task_table(); load_result_table(); }
     setInterval(load_result_table, 1000 * 30)
 </script>
 {% endblock %}
