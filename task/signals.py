@@ -8,7 +8,7 @@ from django_celery_beat.models import PeriodicTask
 def decorate_kwargs(sender, instance, **kwargs):
     """在创建、保存PeriodicTask时自动为其kwargs添加tid字段"""
     kwargs = load_kwargs_from_str(instance.kwargs)
-    if 'tid' not in kwargs:
+    if not instance.name.startswith('celery.') and 'tid' not in kwargs:
         kwargs.update({'tid': instance.id})
         instance.kwargs = dumps_kwargs_safe(kwargs)
         instance.save()
