@@ -11,7 +11,6 @@ urlpatterns = [
     path('results_/', views.get_results_by_task, name='get_results_by_task'), # results/1 or results?tid=1
     path('enable/', views.enable_task, name='enable_task'),
     path('run/', views.run_task, name='run_task'),
-    # path('add/', views.add_interval_task, name='add_task'),
     path('delete/',views.delete_task,name='delete_task'),
     path('avaible/', views.avaible_tasks, name='avaible_tasks'),
 ]

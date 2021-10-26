@@ -3,12 +3,12 @@ import json
 from .models import AvlTask
 from celery import current_app
 from ratelimit.decorators import ratelimit
-from task.utils import dumps_kwargs_safe, generate_schedule, parse_data_form, serialize_avl_task, serialize_result, serialize_task, parse_task, valid_schedule
+from task.utils import dumps_kwargs_safe, generate_schedule, serialize_avl_task, serialize_result, serialize_task, parse_task
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django_celery_beat.models import IntervalSchedule, PeriodicTask
+from django_celery_beat.models import PeriodicTask
 from django_celery_results.models import TaskResult
 
 
@@ -21,14 +21,12 @@ def index(request):
 def dashboard(request):
     return render(request, 'task/dashboard.html')
 
-# TODO：设置一个通用的add_task
-
 
 @login_required
 @csrf_exempt
 @ratelimit(key='ip', rate='10/m')
 def add_task(request):
-    """add Task"""
+    """添加Task"""
     if request.method == 'POST':
         valid_data = parse_task(request.POST)
         if valid_data.get('valid'):
@@ -125,33 +123,6 @@ def run_task(request):  # FIXME: 改为task/run/1,或者post: task/run {tid=1}
                         task.apply_async(args=args, kwargs=kwargs, queue=queue)
                     return JsonResponse({'state': 'success'})
         return JsonResponse({'state': 'failed'})
-
-
-@login_required
-@csrf_exempt
-@ratelimit(key='ip', rate='10/m')
-def add_interval_task(request):
-    """添加interval任务"""
-    if request.method == 'POST':
-        valid_data = parse_data_form(request.POST)
-        if valid_data.get('valid'):
-            data = valid_data.get('data')
-            schedule, _ = IntervalSchedule.objects.get_or_create(
-                every=int(data['every']), period=getattr(IntervalSchedule, data['period']))
-            kwargs = data['kwargs']
-            kwargs.update({'uid': request.user.id})
-            if not PeriodicTask.objects.filter(interval=schedule, task=data['task']).exists():
-                PeriodicTask.objects.create(
-                    interval=schedule,
-                    name=data['name'],
-                    task=data['task'],
-                    args=json.dumps(data['args']),
-                    kwargs=dumps_kwargs_safe(kwargs),
-                    expires=datetime.datetime.now() + datetime.timedelta(seconds=30)
-                )
-            return JsonResponse({'state': 'success'})
-        print(valid_data)
-        return JsonResponse({'state': 'failed', 'err': valid_data.get('err')})
 
 
 @login_required

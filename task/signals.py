@@ -4,9 +4,6 @@ from django.dispatch import receiver
 from django_celery_beat.models import PeriodicTask
 
 
-print("=========signal on task=========")
-
-
 @receiver(models.signals.post_save, sender=PeriodicTask)
 def decorate_kwargs(sender, instance, **kwargs):
     """在创建、保存PeriodicTask时自动为其kwargs添加tid字段"""

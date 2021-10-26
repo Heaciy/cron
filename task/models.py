@@ -20,7 +20,7 @@ class AvlTask(models.Model):
     class Meta:
         verbose_name = _('available task')
         verbose_name_plural = _('available tasks')
-    
+
     def __str__(self) -> str:
         return f"AvlTask: {self.task}"
 
@@ -36,6 +36,8 @@ class AvlTask(models.Model):
 # 从中解析出uid和tid再使用display和Concat组合进行排序
 # https://docs.djangoproject.com/en/3.2/ref/models/database-functions/#concat
 # https://docs.djangoproject.com/zh-hans/3.2/ref/contrib/admin/#django.contrib.admin.display
+
+
 from .utils import load_from_kwargs
 @property
 @admin.display(description='owner')

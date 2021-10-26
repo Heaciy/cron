@@ -1,5 +1,5 @@
-import json
 import re
+import json
 from datetime import datetime
 from typing import Dict, List
 from django.conf import settings
@@ -7,8 +7,6 @@ from django.core.exceptions import ValidationError
 from django_celery_beat.models import IntervalSchedule, CrontabSchedule, PeriodicTask
 from django_celery_beat.validators import crontab_validator
 from django_celery_results.models import TaskResult
-from celery import current_app
-from celery.exceptions import NotRegistered
 from task.models import AvlTask
 
 
@@ -101,36 +99,6 @@ def dumps_kwargs_safe(kwargs):
     return json.dumps(kwargs).replace(': ', ':').replace(', ', ',')
 
 
-def parse_data_form(data):
-    """从request.POST中解析出数据"""
-    data = json.loads(data.get('data'))
-    data = {
-        'name': data.get('name', None),
-        'task': data.get('task', None),
-        'every': data.get('every', None),
-        'period': data.get('period', None),
-        'args': data.get('args', list()),
-        'kwargs': data.get('kwargs', dict())
-    }
-    err = []
-    current_app.loader.import_default_modules()
-    # FIXME
-    # avaible_tasks = list(sorted(name for name in current_app.tasks
-    #                             if not name.startswith('celery.')))
-    if PeriodicTask.objects.filter(name=data['name']).exists():
-        err.append(f'Task name {data["name"]} already in use!')
-    if not data['task'] in current_app.tasks:
-        err.append(f'Task {data["task"]} not exist!')
-    if not data['period'] in ['DAYS', 'HOURS', 'MINUTES']:
-        err.append(f'Period {data["period"]} unqualified!')
-    if not isinstance(data['args'], list):
-        err.append(f'Args must be a list!')
-    if not isinstance(data['kwargs'], dict):
-        err.append(f'Kwargs must be a dict!')
-    valid = False if err and len(err) else True
-    return {'valid': valid, 'data': data, 'err': err}
-
-
 def valid_interval(sche_str):
     try:
         every, period = sche_str.strip().split('/')
@@ -170,7 +138,6 @@ def valid_schedule(schedule, sche_str):
         # 动态获取当前作用域下的验证方法
         valid_func = globals()[f'valid_{schedule}']
         if valid_func(sche_str):
-            
             return True
         return False
     except Exception as e:
@@ -184,6 +151,7 @@ def generate_schedule(schedule, sche_str):
         gen_func = globals()[f'get_{schedule}_schedule']
         return gen_func(sche_str)
     raise ValidationError
+
 
 def get_interval_schedule(valid_str):
     # 单例模式
@@ -206,6 +174,7 @@ def get_crontab_schedule(valid_str):
 
 
 def parse_task(data):
+    """从Post的form中解析数据"""
     data = json.loads(data.get('data'))
     data = {
         'name': data.get('name', None),
