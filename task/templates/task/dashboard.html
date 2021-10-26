@@ -315,18 +315,18 @@
         }
         if (formData["schedule_str"].replace(/(^s*)|(s*$)/g, "").length == 0) {
             err.push("Schedule str cannot be null!")
-        }else{
-            if(formData["schedule"] === "interval"){
-                let reg = /[1-9][0-9]*\/(DAYS|HOURS|MINUTES)$/
-                if(!reg.test(formData['schedule_str'])){
+        } else {
+            if (formData["schedule"] === "interval") {
+                let reg = /[1-9][0-9]*\/(days|hours|minutes|seconds)$/
+                if (!reg.test(formData['schedule_str'])) {
                     err.push("Interval schedule str invalid")
                 }
-            } else if(formData["schedule"] === "crontab"){
+            } else if (formData["schedule"] === "crontab") {
             }
         }
         try {
             let args = $('#fargs').val()
-            if(args.replace(/(^s*)|(s*$)/g, "").length == 0){
+            if (args.replace(/(^s*)|(s*$)/g, "").length == 0) {
                 args = '[]'
             }
             formData.args = Array.from(JSON.parse(args))
@@ -335,7 +335,7 @@
         }
         try {
             let kwargs = $('#fkwargs').val()
-            if(kwargs.replace(/(^s*)|(s*$)/g, "").length == 0){
+            if (kwargs.replace(/(^s*)|(s*$)/g, "").length == 0) {
                 kwargs = '{}'
             }
             formData.kwargs = JSON.parse(kwargs.replace(/'/g, '"'))
@@ -358,10 +358,12 @@
         $('#fevery').val('')
         $('#fargs').val('')
         $('#fkwargs').val('')
-        if($('#fschedule').val()==='interval'){
-            $('#fschedule_str').val('n/DAYS')
-        }else if($('#fschedule').val()==='crontab'){
-            $('#fschedule_str').val('* * * * *')
+        if ($('#fschedule').val() === 'interval') {
+            $('#fschedule_str').val('')
+            $('#fschedule_str').attr('placeholder', 'n/days')
+        } else if ($('#fschedule').val() === 'crontab') {
+            $('#fschedule_str').val('')
+            $('#fschedule_str').attr('placeholder', '* * * * *')
         }
     }
     function add_task() {
@@ -396,9 +398,9 @@
                 let tasks = result.data
                 avlTasks = result.data
                 opotions = ''
-                for(var index in tasks){
+                for (var index in tasks) {
                     rowEle = `<option value=${JSON.stringify(tasks[index]['task'])}>${tasks[index]['name']}</option>`
-                    opotions+=rowEle
+                    opotions += rowEle
                 }
                 $("#foption").html(opotions)
                 console.log(tasks)
@@ -425,8 +427,8 @@
     $('#foption').change(() => {
         let task = $('#foption').val()
         let description
-        for(var index in avlTasks){
-            if(avlTasks[index]['task'] === task){
+        for (var index in avlTasks) {
+            if (avlTasks[index]['task'] === task) {
                 description = JSON.parse(avlTasks[index]['description'])
                 console.log(description)
                 break;

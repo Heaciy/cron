@@ -74,7 +74,8 @@ def serialize_task(tasks: List[PeriodicTask]) -> List[Dict]:
         'enabled': str(task.enabled),
         'total_run_count': task.total_run_count,
         'date_changed': load_strftime_from_datetime(task.date_changed),
-        'description': task.description
+        # 'description': task.description
+        'description': f'{task.interval if task.interval else task.crontab}'
     }
         for task in tasks]
     return data
@@ -128,7 +129,7 @@ def valid_crontab(sche_str):
 
 
 def valid_str(sche_str):
-    return sche_str.strip().upper()
+    return sche_str.strip().lower()
 
 
 def valid_schedule(schedule, sche_str):
@@ -157,7 +158,7 @@ def get_interval_schedule(valid_str):
     # 单例模式
     every, period = valid_str.strip().split('/')
     schedule, _ = IntervalSchedule.objects.get_or_create(
-        every=every, period=period)
+        every=int(every), period=period)
     return schedule
 
 
