@@ -16,6 +16,7 @@ from django.urls import reverse
 
 
 def logout(request):
+    """退出"""
     auth.logout(request)
     return redirect(request.GET.get('from', reverse('main')))
 
@@ -75,6 +76,3 @@ def send_captcha(request):
     if state and interval > 30:  # 2/m
         return JsonResponse({'state': 'success'})
     return JsonResponse({'state': 'failed'})
-
-
-# def username_

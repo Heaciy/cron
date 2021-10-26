@@ -4,7 +4,6 @@ from .models import AvlTask
 from celery import current_app
 from ratelimit.decorators import ratelimit
 from task.utils import dumps_kwargs_safe, generate_schedule, serialize_avl_task, serialize_result, serialize_task, parse_task
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -12,17 +11,14 @@ from django_celery_beat.models import PeriodicTask
 from django_celery_results.models import TaskResult
 
 
-@login_required
 def index(request):
     return redirect('dashboard')
 
 
-@login_required
 def dashboard(request):
     return render(request, 'task/dashboard.html')
 
 
-@login_required
 @csrf_exempt
 @ratelimit(key='ip', rate='10/m')
 def add_task(request):
@@ -50,7 +46,6 @@ def add_task(request):
         return JsonResponse({'state': 'failed', 'err': valid_data.get('err')})
 
 
-@login_required
 def get_tasks(request):
     """获取当前用户的所有Task"""
     if request.method == 'GET':
@@ -61,7 +56,6 @@ def get_tasks(request):
     return JsonResponse({"state": "success", "data": data})
 
 
-@login_required
 def get_results(request):
     """获取当前用户的所有Result"""
     if request.method == 'GET':
@@ -71,8 +65,6 @@ def get_results(request):
     return JsonResponse({"state": "success", "data": data})
 
 
-# TODO: 直接使用中间件拦截
-@login_required
 def get_results_by_task(request):
     """通过tid获取本用户所属的result"""
     if request.method == 'GET':
@@ -85,7 +77,6 @@ def get_results_by_task(request):
     return JsonResponse({"state": "success", "data": data})
 
 
-@login_required
 @ratelimit(key='ip', rate='20/m')
 def enable_task(request):
     """激活/关闭用户所有的某个task"""
@@ -101,7 +92,6 @@ def enable_task(request):
         return JsonResponse({'state': 'failed'})
 
 
-@login_required
 @ratelimit(key='ip', rate='20/m')
 def run_task(request):  # FIXME: 改为task/run/1,或者post: task/run {tid=1}
     """测试运行用户所属的某个task"""
@@ -125,7 +115,6 @@ def run_task(request):  # FIXME: 改为task/run/1,或者post: task/run {tid=1}
         return JsonResponse({'state': 'failed'})
 
 
-@login_required
 @ratelimit(key='ip', rate='10/m')
 def delete_task(request):  # FIXME: 改为task/delete/1, 或者post：task/delete {tid=1}
     """删除当前用户所有的某个task"""
@@ -139,7 +128,6 @@ def delete_task(request):  # FIXME: 改为task/delete/1, 或者post：task/delet
         return JsonResponse({'state': 'failed'})  # TODO: 分类返回err:错误原因
 
 
-@login_required
 @ratelimit(key='ip', rate='10/m')
 def avaible_tasks(request):
     """获取当前用户所有可用tasks"""
