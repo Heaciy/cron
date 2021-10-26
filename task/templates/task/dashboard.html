@@ -16,25 +16,23 @@
                         <option selected value="1">task.task</option>
                         <option value="2">task.task</option>
                         <option value="4">task.task</option>
-                        <!-- <option value="4">通知</option> -->
                     </select>
                 </div>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="Number of Periods" id="fevery" value="1"
+                    <input type="text" class="form-control" placeholder="Args" id="fargs" value="">
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Kwargs" id="fkwargs" value="">
+                </div>
+                <div class="col">
+                    <select class="form-control" id="fschedule">
+                        <option selected value="interval">Interval</option>
+                        <option value="crontab">Crontab</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="schedule str" id="fschedule_str" value=""
                         required>
-                </div>
-                <div class="col">
-                    <select class="form-control" id="fperiod" placeholder="Interval Period">
-                        <option value="1">Days</option>
-                        <option value="2">Hours</option>
-                        <option value="4">Minutes</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <input type="text" class="form-control" placeholder="Args" id="fargs" value="[]">
-                </div>
-                <div class="col">
-                    <input type="text" class="form-control" placeholder="Kwargs" id="fkwargs" value="{}">
                 </div>
             </div>
         </form>
@@ -298,39 +296,53 @@
     }
 </script>
 <script>
-    $("#addBtn").click(() => add_interval_task())
+    $("#addBtn").click(() => add_task())
     function parse_data_form() {
-        period = { 1: "DAYS", 2: "HOURS", 4: "MINUTES" }
         err = []
         data = {}
         formData = {
             name: $('#fname').val(),
-            task: $('#ftask').val(),
-            every: parseInt($('#fevery').val()),
-            period: period[parseInt($('#fperiod').val())],
+            task: $('#foption').val(),
+            schedule: $('#fschedule').val(),
+            schedule_str: $('#fschedule_str').val(),
         }
+
         if (formData["name"].replace(/(^s*)|(s*$)/g, "").length == 0) {
             err.push("Task name cannot be null!")
         }
         if (formData["task"].replace(/(^s*)|(s*$)/g, "").length == 0) {
             err.push("Task cannot be null!")
         }
-        if (Number.isNaN(formData["every"])) {
-            err.push("Every cannot be null!")
-        }
-        if (formData["period"].replace(/(^s*)|(s*$)/g, "").length == 0) {
-            err.push("Period cannot be null!")
+        if (formData["schedule_str"].replace(/(^s*)|(s*$)/g, "").length == 0) {
+            err.push("Schedule str cannot be null!")
+        }else{
+            if(formData["schedule"] === "interval"){
+                let reg = /[1-9][0-9]*\/(DAYS|HOURS|MINUTES)$/
+                if(!reg.test(formData['schedule_str'])){
+                    err.push("Interval schedule str invalid")
+                }
+            } else if(formData["schedule"] === "crontab"){
+            }
         }
         try {
-            formData.args = Array.from(JSON.parse($('#fargs').val()))
+            let args = $('#fargs').val()
+            if(args.replace(/(^s*)|(s*$)/g, "").length == 0){
+                args = '[]'
+            }
+            formData.args = Array.from(JSON.parse(args))
         } catch (e) {
             err.push("Args must be a list!")
         }
         try {
-            formData.kwargs = JSON.parse($('#fkwargs').val().replace(/'/g, '"'))
+            let kwargs = $('#fkwargs').val()
+            if(kwargs.replace(/(^s*)|(s*$)/g, "").length == 0){
+                kwargs = '{}'
+            }
+            formData.kwargs = JSON.parse(kwargs.replace(/'/g, '"'))
         } catch (e) {
             err.push("Kwargs must be a dict!")
         }
+
         data.data = formData
         data.err = err
         if (err.length != 0) {
@@ -341,12 +353,18 @@
         return data
     }
     function clean_form() {
+        console.log('clean_form')
         $('#fname').val('')
         $('#fevery').val('')
-        $('#fargs').val('[]')
-        $('#fkwargs').val('{}')
+        $('#fargs').val('')
+        $('#fkwargs').val('')
+        if($('#fschedule').val()==='interval'){
+            $('#fschedule_str').val('n/DAYS')
+        }else if($('#fschedule').val()==='crontab'){
+            $('#fschedule_str').val('* * * * *')
+        }
     }
-    function add_interval_task() {
+    function add_task() {
         let addBtn = $('#add')
         addBtn.attr("disabled", true)  // 关闭add按钮
         valied_data = parse_data_form()
@@ -370,11 +388,13 @@
     }
 </script>
 <script>
+    var avlTasks
     function load_available_tasks() {
         $.get(urls.avlTask, function (result) {
             console.log(result)
             if (result.state.toLowerCase() == "success") {
                 let tasks = result.data
+                avlTasks = result.data
                 opotions = ''
                 for(var index in tasks){
                     rowEle = `<option value=${JSON.stringify(tasks[index]['task'])}>${tasks[index]['name']}</option>`
@@ -391,5 +411,32 @@
 <script>
     window.onload = () => { load_available_tasks(); load_task_table(); load_result_table(); }
     setInterval(load_result_table, 1000 * 30)
+</script>
+<script>
+    $('#fschedule').change(() => {
+        let schedule = $('#fschedule').val()
+        if (schedule === "interval") {
+            $('#fschedule_str').attr('placeholder', 'n/Days')
+        } else if (schedule === "crontab") {
+            $('#fschedule_str').attr('placeholder', '* * * * *')
+        }
+        console.log(schedule)
+    })
+    $('#foption').change(() => {
+        let task = $('#foption').val()
+        let description
+        for(var index in avlTasks){
+            if(avlTasks[index]['task'] === task){
+                description = JSON.parse(avlTasks[index]['description'])
+                console.log(description)
+                break;
+            }
+        }
+        // description.replace(/\r\n/g, "")
+        $('#fargs').attr('placeholder', description['args'])
+        $('#fkwargs').attr('placeholder', description['kwargs'])
+        console.log(avlTasks)
+        console.log(task)
+    })
 </script>
 {% endblock %}

@@ -1,46 +1,15 @@
-from datetime import datetime
 import json
-from celery import current_app
+import re
+from datetime import datetime
 from typing import Dict, List
-from django_celery_beat.models import IntervalSchedule, PeriodicTask
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django_celery_beat.models import IntervalSchedule, CrontabSchedule, PeriodicTask
+from django_celery_beat.validators import crontab_validator
 from django_celery_results.models import TaskResult
+from celery import current_app
 from celery.exceptions import NotRegistered
-from cron import celery_app
-
-
-def add_interval_schedule(every, period):
-    schedule, created = IntervalSchedule.objects.get_or_create(
-        every=every, period=period)
-    return schedule
-
-
-def delete_interval_schedule(schedule_id):
-    schedule = IntervalSchedule.objects.get(id=schedule_id)
-    # 反向查询，如果无关联task则删除，否则不删除
-    if schedule.periodictask_set.all().count() == 0:
-        schedule.delete()
-
-
-def add_periodic_task_by_interval(interval_id, name, task):
-    tasks = list(sorted(name for name in celery_app.tasks
-                        if not name.startswith('celery.')))
-    if task not in tasks:
-        raise NotRegistered(f"Task {task} was not registed")
-
-    interval_obj = IntervalSchedule.objects.get(id=interval_id)
-    periodic_task, created = PeriodicTask.objects.get_or_create(
-        interval=interval_obj,
-        name=name,
-        task=task
-    )
-
-
-def disable_periodic_task():
-    pass
-
-
-def enable_periodic_task():
-    pass
+from task.models import AvlTask
 
 
 def load_from_kwargs(obj, key):
@@ -113,11 +82,17 @@ def serialize_task(tasks: List[PeriodicTask]) -> List[Dict]:
     return data
 
 
+def load_description_safe(description):
+    description = description.replace('\n', '').replace('\r', '')
+    description = re.sub(r' +', '', description)
+    return description
+
+
 def serialize_avl_task(tasks) -> List[Dict]:
     data = [{
         'name': task.name,
         'task': task.task,
-        'discription': task.description,
+        'description': load_description_safe(task.description),
     } for task in tasks]
     return data
 
@@ -152,5 +127,104 @@ def parse_data_form(data):
         err.append(f'Args must be a list!')
     if not isinstance(data['kwargs'], dict):
         err.append(f'Kwargs must be a dict!')
+    valid = False if err and len(err) else True
+    return {'valid': valid, 'data': data, 'err': err}
+
+
+def valid_interval(sche_str):
+    try:
+        every, period = sche_str.strip().split('/')
+        if int(every) > 0 and period.lower() in settings.AVL_PERIOD:
+            return True
+        return False
+    except Exception as e:
+        return False
+
+
+def valid_crontab(sche_str):
+    try:
+        print(sche_str)
+        tmp = sche_str.strip().split()
+        if len(tmp) != 5:
+            return False
+        tab = ['*'] * 5
+        for i, j in enumerate(tmp):
+            tab[i] = j
+        tab = ' '.join(tab)
+        print(tab)
+        crontab_validator(tab)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+
+def valid_str(sche_str):
+    return sche_str.strip().upper()
+
+
+def valid_schedule(schedule, sche_str):
+    if schedule not in settings.AVL_SCHEDULE:
+        return False
+    try:
+        # 动态获取当前作用域下的验证方法
+        valid_func = globals()[f'valid_{schedule}']
+        if valid_func(sche_str):
+            
+            return True
+        return False
+    except Exception as e:
+        return False
+
+
+def generate_schedule(schedule, sche_str):
+    # 根据schedule, sche_str生成schedule对象
+    sche_str = valid_str(sche_str)
+    if valid_schedule(schedule, sche_str):
+        gen_func = globals()[f'get_{schedule}_schedule']
+        return gen_func(sche_str)
+    raise ValidationError
+
+def get_interval_schedule(valid_str):
+    # 单例模式
+    every, period = valid_str.strip().split('/')
+    schedule, _ = IntervalSchedule.objects.get_or_create(
+        every=every, period=period)
+    return schedule
+
+
+def get_crontab_schedule(valid_str):
+    # 单例模式
+    args = valid_str.strip().split(' ')
+    if len(args) == 5:
+        schedule, _ = CrontabSchedule.objects.get_or_create(
+            minute=args[0], hour=args[1], day_of_week=args[2], day_of_month=args[3], month_of_year=args[4])
+    elif len(args) == 6:
+        schedule, _ = CrontabSchedule.objects.get_or_create(
+            minute=args[0], hour=args[1], day_of_week=args[2], day_of_month=args[3], month_of_year=args[4], timezone=args[5])
+    return schedule
+
+
+def parse_task(data):
+    data = json.loads(data.get('data'))
+    data = {
+        'name': data.get('name', None),
+        'task': data.get('task', None),
+        'args': data.get('args', list()),
+        'kwargs': data.get('kwargs', dict()),
+        'schedule': data.get('schedule', None),
+        'sche_str': data.get('schedule_str', None)
+    }
+    err = []
+    if PeriodicTask.objects.filter(name=data['name']).exists():
+        err.append(f'Task name {data["name"]} already in use!')
+    if not data['task'] in AvlTask.avl_tasks():  # 需要校验用户是否满足
+        err.append(f'Task {data["task"]} not exist!')
+    if not isinstance(data['args'], list):
+        err.append(f'Args must be a list!')
+    if not isinstance(data['kwargs'], dict):
+        err.append(f'Kwargs must be a dict!')
+    if not valid_schedule(data['schedule'], data['sche_str']):
+        err.append(f'Schedule str invalid!')
     valid = False if err and len(err) else True
     return {'valid': valid, 'data': data, 'err': err}

@@ -4,7 +4,6 @@ from django_celery_results.models import TaskResult
 from django_celery_beat.models import PeriodicTask
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from .utils import load_from_kwargs
 
 
 #TODO: limit/available
@@ -37,6 +36,7 @@ class AvlTask(models.Model):
 # 从中解析出uid和tid再使用display和Concat组合进行排序
 # https://docs.djangoproject.com/en/3.2/ref/models/database-functions/#concat
 # https://docs.djangoproject.com/zh-hans/3.2/ref/contrib/admin/#django.contrib.admin.display
+from .utils import load_from_kwargs
 @property
 @admin.display(description='owner')
 def owner(self):

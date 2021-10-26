@@ -3,7 +3,7 @@ import json
 from .models import AvlTask
 from celery import current_app
 from ratelimit.decorators import ratelimit
-from task.utils import dumps_kwargs_safe, parse_data_form, serialize_avl_task, serialize_result, serialize_task
+from task.utils import dumps_kwargs_safe, generate_schedule, parse_data_form, serialize_avl_task, serialize_result, serialize_task, parse_task, valid_schedule
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
@@ -26,36 +26,30 @@ def dashboard(request):
 
 @login_required
 @csrf_exempt
+@ratelimit(key='ip', rate='10/m')
 def add_task(request):
+    """add Task"""
     if request.method == 'POST':
-        args = request.POST.get('args')
-        task = request.POST.get('task')
-        every = request.POST.get('every')
-        period = request.POST.get('period')
-        task_name = '@'.join([
-            # request.user.username,
-            task,
-            f"{every}-{period}"
-        ])
-        print(locals())
-        print(getattr(IntervalSchedule, period))
-        print(request.user.username)
-        # print(task_name)
-        # now = datetime.datetime.now().strftime("%Y-%M-%d/%H:%M:%S ")
-        schedule, created = IntervalSchedule.objects.get_or_create(
-            every=int(every), period=getattr(IntervalSchedule, period))
-        print(schedule.id)
-        if not PeriodicTask.objects.filter(interval=schedule, task=task).exists():
-            PeriodicTask.objects.create(
-                interval=schedule,
-                name=task_name,
-                task=task,
-                args=json.dumps(json.loads(args)),
-                expires=datetime.datetime.now() + datetime.timedelta(seconds=30)
-            )
-        print(json.dumps(json.loads(args)))
-        print("PeriodicTask Already Exists")
-        return JsonResponse({"state": "success"})
+        valid_data = parse_task(request.POST)
+        if valid_data.get('valid'):
+            data = valid_data.get('data')
+            schedule = generate_schedule(data['schedule'], data['sche_str'])
+            kwargs = data['kwargs']
+            kwargs.update({'uid': request.user.id})
+            schedule_kwargs = {'interval': schedule} if data['schedule'] == 'interval' else {
+                'crontab': schedule}
+            if not PeriodicTask.objects.filter(task=data['task'], **schedule_kwargs).exists():
+                PeriodicTask.objects.create(
+                    **schedule_kwargs,
+                    name=data['name'],
+                    task=data['task'],
+                    args=json.dumps(data['args']),
+                    kwargs=dumps_kwargs_safe(kwargs),
+                    expires=datetime.datetime.now() + datetime.timedelta(seconds=30)
+                )
+            return JsonResponse({'state': 'success'})
+        print(valid_data)
+        return JsonResponse({'state': 'failed', 'err': valid_data.get('err')})
 
 
 @login_required
@@ -180,7 +174,8 @@ def avaible_tasks(request):
     """获取当前用户所有可用tasks"""
     if request.method == 'GET':
         all_tasks = AvlTask.objects.all()
-        avl_tasks = [task for task in all_tasks if not task.groups.all() or request.user.groups.all() & task.groups.all()]
+        avl_tasks = [task for task in all_tasks if not task.groups.all(
+        ) or request.user.groups.all() & task.groups.all()]
         tasks = serialize_avl_task(avl_tasks)
         # FIXME: 设置过滤列表/添加limit表 task-参数要求-权限(group/superuser/all)
         return JsonResponse({'state': 'success', 'data': tasks})
