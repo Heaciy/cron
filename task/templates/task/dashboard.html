@@ -2,6 +2,27 @@
 
 {% block title %}Dashboard{% endblock %}
 
+{% block style %}
+p{
+padding:0;
+margin:0;
+}
+.tooltip.show {
+opacity: 1;
+}
+
+.tooltip-inner {
+background-color: #17a2b8!important;
+box-shadow: 0px 0px 4px black;
+opacity: 1 !important;
+}
+
+.tooltip.bs-tooltip-bottom .arrow:before {
+border-bottom-color: #17a2b8 !important;
+}
+
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
@@ -19,10 +40,12 @@
                     </select>
                 </div>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="Args" id="fargs" value="">
+                    <input type="text" class="form-control" placeholder="Args" id="fargs" value="" data-toggle="tooltip"
+                        data-placement="bottom" title="Args: List">
                 </div>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="Kwargs" id="fkwargs" value="">
+                    <input type="text" class="form-control" placeholder="Kwargs" id="fkwargs" value=""
+                        data-toggle="tooltip" data-placement="bottom" title="Kwargs: Dict">
                 </div>
                 <div class="col">
                     <select class="form-control" id="fschedule">
@@ -31,11 +54,16 @@
                     </select>
                 </div>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="schedule str" id="fschedule_str" value=""
+                    <input type="text" class="form-control" placeholder="n/days" id="fschedule_str" value=""
                         required>
                 </div>
             </div>
         </form>
+        <div class="border mt-2 px-3 rounded d-inline-flex flex-row">
+            <div class="mr-1" id='task_name'>Task name</div>
+            <div class="mr-2">:</div>
+            <div id='task_info'>Task info</div>
+        </div>
     </div>
     <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
         <h3><button type="button" class="badge badge-info btn" id="tasksBtn">Tasks</span></h3>
@@ -418,17 +446,17 @@
     $('#fschedule').change(() => {
         let schedule = $('#fschedule').val()
         if (schedule === "interval") {
-            $('#fschedule_str').attr('placeholder', 'n/Days')
+            $('#fschedule_str').attr('placeholder', 'n/days')
         } else if (schedule === "crontab") {
             $('#fschedule_str').attr('placeholder', '* * * * *')
         }
         console.log(schedule)
     })
     $('#foption').change(() => {
-        let task = $('#foption').val()
-        let description
+        let task = $('#foption').val(), task_name, description
         for (var index in avlTasks) {
             if (avlTasks[index]['task'] === task) {
+                task_name = avlTasks[index]['name']
                 description = JSON.parse(avlTasks[index]['description'])
                 console.log(description)
                 break;
@@ -437,8 +465,15 @@
         // description.replace(/\r\n/g, "")
         $('#fargs').attr('placeholder', description['args'])
         $('#fkwargs').attr('placeholder', description['kwargs'])
+        $('#task_name').html(`<p>${task_name}</p>`)
+        $('#task_info').html(`<p>${description['info']}</p>`)
         console.log(avlTasks)
         console.log(task)
+    })
+</script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
     })
 </script>
 {% endblock %}
