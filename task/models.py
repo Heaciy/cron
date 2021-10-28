@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 
-#TODO: limit/available
+# TODO: limit/available
 class AvlTask(models.Model):
     name = models.CharField(
         max_length=20, verbose_name=_('name'), unique=True
@@ -39,6 +39,8 @@ class AvlTask(models.Model):
 
 
 from .utils import load_from_kwargs
+
+
 @property
 @admin.display(description='owner')
 def owner(self):

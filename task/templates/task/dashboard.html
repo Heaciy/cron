@@ -3,72 +3,77 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block style %}
-p{
-padding:0;
-margin:0;
-}
-.tooltip.show {
-opacity: 1;
-}
+    p{
+    padding:0;
+    margin:0;
+    }
+    .tooltip.show {
+    opacity: 1;
+    }
 
-.tooltip-inner {
-background-color: #17a2b8!important;
-box-shadow: 0px 0px 4px black;
-opacity: 1 !important;
-}
+    .tooltip-inner {
+    background-color: #17a2b8!important;
+    box-shadow: 0px 0px 4px black;
+    opacity: 1 !important;
+    }
 
-.tooltip.bs-tooltip-bottom .arrow:before {
-border-bottom-color: #17a2b8 !important;
-}
+    .tooltip.bs-tooltip-bottom .arrow:before {
+    border-bottom-color: #17a2b8 !important;
+    }
 
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-        <h3><button type="button" class="badge badge-success btn" id="addBtn">New</button></h3>
-        <form id='taskForm'>
-            <div class="form-row">
-                <div class="col">
-                    <input type="text" class="form-control" placeholder="Name" id="fname" required>
+    <div class="container">
+        <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
+            <h3>
+                <button type="button" class="badge badge-success btn" id="addBtn">New</button>
+            </h3>
+            <form id='taskForm'>
+                <div class="form-row">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Name" id="fname" required>
+                    </div>
+                    <div class="col">
+                        <select class="form-control" id="foption">
+                            <option selected value="1">task.task</option>
+                            <option value="2">task.task</option>
+                            <option value="4">task.task</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Args" id="fargs" value=""
+                               data-toggle="tooltip"
+                               data-placement="bottom" title="Args: List">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Kwargs" id="fkwargs" value=""
+                               data-toggle="tooltip" data-placement="bottom" title="Kwargs: Dict">
+                    </div>
+                    <div class="col">
+                        <select class="form-control" id="fschedule">
+                            <option selected value="interval">Interval</option>
+                            <option value="crontab">Crontab</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="n/days" id="fschedule_str" value=""
+                               required>
+                    </div>
                 </div>
-                <div class="col">
-                    <select class="form-control" id="foption">
-                        <option selected value="1">task.task</option>
-                        <option value="2">task.task</option>
-                        <option value="4">task.task</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <input type="text" class="form-control" placeholder="Args" id="fargs" value="" data-toggle="tooltip"
-                        data-placement="bottom" title="Args: List">
-                </div>
-                <div class="col">
-                    <input type="text" class="form-control" placeholder="Kwargs" id="fkwargs" value=""
-                        data-toggle="tooltip" data-placement="bottom" title="Kwargs: Dict">
-                </div>
-                <div class="col">
-                    <select class="form-control" id="fschedule">
-                        <option selected value="interval">Interval</option>
-                        <option value="crontab">Crontab</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <input type="text" class="form-control" placeholder="n/days" id="fschedule_str" value=""
-                        required>
-                </div>
+            </form>
+            <div class="border mt-2 px-3 rounded d-inline-flex flex-row">
+                <div class="mr-1" id='task_name'>Task name</div>
+                <div class="mr-2">:</div>
+                <div id='task_info'>Task info</div>
             </div>
-        </form>
-        <div class="border mt-2 px-3 rounded d-inline-flex flex-row">
-            <div class="mr-1" id='task_name'>Task name</div>
-            <div class="mr-2">:</div>
-            <div id='task_info'>Task info</div>
         </div>
-    </div>
-    <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-        <h3><button type="button" class="badge badge-info btn" id="tasksBtn">Tasks</span></h3>
-        <table class="table">
-            <thead class="thead-dark">
+        <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
+            <h3>
+                <button type="button" class="badge badge-info btn" id="tasksBtn">Tasks</button>
+            </h3>
+            <table class="table">
+                <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
@@ -82,8 +87,8 @@ border-bottom-color: #17a2b8 !important;
                     <th scope="col">Test</th>
                     <th scope="col">Delete</th>
                 </tr>
-            </thead>
-            <tbody id="tasksTab">
+                </thead>
+                <tbody id="tasksTab">
                 <tr>
                     <th scope="row">1</th>
                     <td>task.name</td>
@@ -103,8 +108,7 @@ border-bottom-color: #17a2b8 !important;
                     <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        </script>2</th>
+                    <th scope="row">2</th>
                     <td>task.name</td>
                     <td>task.task.generic</td>
                     <td>[]</td>
@@ -139,13 +143,15 @@ border-bottom-color: #17a2b8 !important;
                     <td><a class="btn btn-sm btn-outline-success py-0" href="#">test</a></td>
                     <td><a class="btn btn-sm btn-outline-danger btn-del py-0" tid=1 href="#">del</a></td>
                 </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
-        <h3><button type="button" class="badge badge-warning btn" id="resultsBtn">Results</span></h3>
-        <table class="table">
-            <thead class="thead-dark">
+                </tbody>
+            </table>
+        </div>
+        <div class="rounded-lg my-4 px-5 py-4" style="background-color: aliceblue;">
+            <h3>
+                <button type="button" class="badge badge-warning btn" id="resultsBtn">Results</button>
+            </h3>
+            <table class="table">
+                <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
@@ -157,8 +163,8 @@ border-bottom-color: #17a2b8 !important;
                     <th scope="col">Date</th>
 
                 </tr>
-            </thead>
-            <tbody id="resultsTab">
+                </thead>
+                <tbody id="resultsTab">
                 <tr>
                     <th scope="row">1</th>
                     <td>task.name</td>
@@ -189,291 +195,301 @@ border-bottom-color: #17a2b8 !important;
                     <td>None</td>
                     <td>2021-08-31 15:36:44</td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 {% endblock %}
 
 {% block script_extends %}
-<script type="text/javascript">
-    let urls = {
-        add: '{% url "add_task" %}',
-        tasks: '{% url "get_tasks" %}',
-        results: '{% url "get_results" %}',
-        runTask: '{% url "run_task" %}',
-        enableTask: '{% url "enable_task" %}',
-        delTask: '{% url "delete_task" %}',
-        avlTask: '{% url "avaible_tasks" %}',
-    }
-    // var data
-    function load_data(apiStr) {
-        var defer = $.Deferred()
-        $.ajax({
-            url: apiStr,
-            type: 'GET',
-            cacahe: false,
-            dataType: "json",
-            success: function (result) {
-                if (result.state.toLowerCase() === "success") {
-                    defer.resolve(result.data)
-                }
-            },
-            error: function (err) {
-                alert("请求发生错误！")
-            }
-        })
-        return defer.promise()
-    }
-    $("#tasksBtn").click(() => load_task_table())
-    $("#resultsBtn").click(() => load_result_table())
+    <script type="text/javascript">
+        let urls = {
+            add: '{% url "add_task" %}',
+            tasks: '{% url "get_tasks" %}',
+            results: '{% url "get_results" %}',
+            runTask: '{% url "run_task" %}',
+            enableTask: '{% url "enable_task" %}',
+            delTask: '{% url "delete_task" %}',
+            avlTask: '{% url "available_tasks" %}',
+        }
 
-    function load_task_table() {
-        let taskBtn = $('#tasks')
-        taskBtn.attr("disabled", true)  // 关闭taskBtn按钮
-        let tab = $('#tasksTab')
-        let tbody = ""
-        $.when(load_data(urls.tasks)).done(function (result) {
-            data = result
-            taskBtn.attr("disabled", false)  // 恢复taskBtn按钮
-            for (var index in data) {
-                var task = data[index]
-                let cb = `cb-${task.tid}`
-                var enable = `<td><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" tid=${task.tid} id=${cb}><label class="custom-control-label" for=${cb}></label></div></td>`
-                if (JSON.parse(task.enabled.toLowerCase())) {
-                    enable = `<td><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" tid=${task.tid} id=${cb} checked><label class="custom-control-label" for=${cb}></label></div></td>`
+        // var data
+        function load_data(apiStr) {
+            let defer = $.Deferred();
+            $.ajax({
+                url: apiStr,
+                type: 'GET',
+                cache: false,
+                dataType: "json",
+                success: function (result) {
+                    if (result.state.toLowerCase() === "success") {
+                        defer.resolve(result.data)
+                    }
+                },
+                error: function (err) {
+                    alert("请求发生错误！")
                 }
-                // let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${task.name}</td><td>${task.task}</td><td>${JSON.stringify(task.args)}</td><td>${JSON.stringify(task.kwargs)}</td><td>${task.total_run_count}</td><td>${task.date_changed}</td><td>${task.description}</td><td>${task.enabled}</td><td><a class="btn btn-sm btn-outline-success py-0 btn-test" tid=${task.tid} href="#">test</a></td></tr>`
-                let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${task.name}</td><td>${task.task}</td><td>${JSON.stringify(task.args)}</td><td>${JSON.stringify(task.kwargs)}</td><td>${task.total_run_count}</td><td>${task.date_changed}</td><td>${task.description}</td>${enable}<td><a class="btn btn-sm btn-outline-success py-0 btn-test" tid=${task.tid} href="#">test</a></td><td><a class="btn btn-sm btn-outline-danger py-0 btn-del" tid=${task.tid} href="#">del</a></td></tr>`
-                tbody += rowEle
-            }
-            tab.html(tbody)
-            $("a.btn-test").click(function () {
-                $(this).addClass('disabled')  // 关闭test按钮
-                run_task($(this).attr('tid'))
-                $(this).removeClass('disabled')  // 开启test按钮
-            });
-            $("a.btn-del").click(function () {
-                $(this).addClass('disabled')  // 关闭del按钮
-                del_task($(this).attr('tid'))
-                $(this).removeClass('disabled')  // 开启del按钮
-            });
-            $("input:checkbox").change(function () {
-                if (this.checked) {
-                    console.log(`${$(this).attr('tid')} checked`)
-                    enable_task($(this).attr('tid'))
-                } else {
-                    console.log(`${$(this).attr('tid')} uncheck`)
-                    enable_task($(this).attr('tid'))
+            })
+            return defer.promise()
+        }
+
+        $("#tasksBtn").click(() => load_task_table())
+        $("#resultsBtn").click(() => load_result_table())
+
+        function load_task_table() {
+            let taskBtn = $('#tasks')
+            taskBtn.attr("disabled", true)  // 关闭taskBtn按钮
+            let tab = $('#tasksTab')
+            let tbody = ""
+            $.when(load_data(urls.tasks)).done(function (result) {
+                let data = result;
+                taskBtn.attr("disabled", false)  // 恢复taskBtn按钮
+                for (let index in data) {
+                    let task = data[index];
+                    let cb = `cb-${task.tid}`
+                    let enable = `<td><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" tid=${task.tid} id=${cb}><label class="custom-control-label" for=${cb}></label></div></td>`;
+                    if (JSON.parse(task.enabled.toLowerCase())) {
+                        enable = `<td><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" tid=${task.tid} id=${cb} checked><label class="custom-control-label" for=${cb}></label></div></td>`
+                    }
+                    let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${task.name}</td><td>${task.task}</td><td>${JSON.stringify(task.args)}</td><td>${JSON.stringify(task.kwargs)}</td><td>${task.total_run_count}</td><td>${task.date_changed}</td><td>${task.description}</td>${enable}<td><a class="btn btn-sm btn-outline-success py-0 btn-test" tid=${task.tid} href="#">test</a></td><td><a class="btn btn-sm btn-outline-danger py-0 btn-del" tid=${task.tid} href="#">del</a></td></tr>`
+                    tbody += rowEle
                 }
-            });
-        })
-    }
-    function load_result_table() {
-        let resultBtn = $('#results')
-        resultBtn.attr("disabled", true)  // 关闭resultBtn按钮
-        let tab = $('#resultsTab')
-        let tbody = ""
-        $.when(load_data(urls.results)).done(function (result) {
-            data = result
-            resultBtn.attr("disabled", false)  // 恢复resultBtn按钮
-            for (var index in data) {
-                var result = data[index]
-                let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${result.task_obj}</td><td>${result.task_name}</td><td>${JSON.stringify(result.task_args)}</td><td>${JSON.stringify(result.task_kwargs)}</td><td>${result.status}</td><td>${result.result}</td><td>${result.date_done}</td></tr>`
-                tbody += rowEle
-            }
-            tab.html(tbody)
-        })
-    }
-</script>
-<script>
-    function enable_task(tid_) {
-        $.get(urls.enableTask, { tid: tid_ },
-            function (result) {
-                console.log(result)
-                if (result.state.toLowerCase() == "success") {
-                    alert(result.state)
-                } else {
-                    alert(result.state)
+                tab.html(tbody)
+                $("a.btn-test").click(function () {
+                    $(this).addClass('disabled')  // 关闭test按钮
+                    run_task($(this).attr('tid'))
+                    $(this).removeClass('disabled')  // 开启test按钮
+                });
+                $("a.btn-del").click(function () {
+                    $(this).addClass('disabled')  // 关闭del按钮
+                    del_task($(this).attr('tid'))
+                    $(this).removeClass('disabled')  // 开启del按钮
+                });
+                $("input:checkbox").change(function () {
+                    if (this.checked) {
+                        console.log(`${$(this).attr('tid')} checked`)
+                        enable_task($(this).attr('tid'))
+                    } else {
+                        console.log(`${$(this).attr('tid')} uncheck`)
+                        enable_task($(this).attr('tid'))
+                    }
+                });
+            })
+        }
+
+        function load_result_table() {
+            let resultBtn = $('#results')
+            resultBtn.attr("disabled", true)  // 关闭resultBtn按钮
+            let tab = $('#resultsTab')
+            let tbody = ""
+            $.when(load_data(urls.results)).done(function (result) {
+                let data = result;
+                resultBtn.attr("disabled", false)  // 恢复resultBtn按钮
+                for (let index in data) {
+                    let res = data[index]
+                    let rowEle = `<tr><th scope="row">${parseInt(index) + 1}</th><td>${res.task_obj}</td><td>${res.task_name}</td><td>${JSON.stringify(res.task_args)}</td><td>${JSON.stringify(res.task_kwargs)}</td><td>${res.status}</td><td>${res.result}</td><td>${res.date_done}</td></tr>`
+                    tbody += rowEle
                 }
-            });
-    }
-    function run_task(tid_) {
-        $.get(urls.runTask, { tid: tid_ },
-            function (result) {
-                console.log(result)
-                if (result.state.toLowerCase() == "success") {
-                    alert(result.state)
-                } else {
-                    alert(result.state)
-                }
-            });
-    }
-    function del_task(tid_) {
-        if (confirm("确认要删除？")) {
-            $.get(urls.delTask, { tid: tid_ },
+                tab.html(tbody)
+            })
+        }
+    </script>
+    <script>
+        function enable_task(tid_) {
+            $.get(urls.enableTask, {tid: tid_},
                 function (result) {
-                    if (result.state.toLowerCase() == "success") {
+                    console.log(result)
+                    if (result.state.toLowerCase() === "success") {
                         alert(result.state)
-                        load_task_table() // 重新加载task table
                     } else {
                         alert(result.state)
                     }
-                })
-        }
-    }
-</script>
-<script>
-    $("#addBtn").click(() => add_task())
-    function parse_data_form() {
-        err = []
-        data = {}
-        formData = {
-            name: $('#fname').val(),
-            task: $('#foption').val(),
-            schedule: $('#fschedule').val(),
-            schedule_str: $('#fschedule_str').val(),
+                });
         }
 
-        if (formData["name"].replace(/(^s*)|(s*$)/g, "").length == 0) {
-            err.push("Task name cannot be null!")
-        }
-        if (formData["task"].replace(/(^s*)|(s*$)/g, "").length == 0) {
-            err.push("Task cannot be null!")
-        }
-        if (formData["schedule_str"].replace(/(^s*)|(s*$)/g, "").length == 0) {
-            err.push("Schedule str cannot be null!")
-        } else {
-            if (formData["schedule"] === "interval") {
-                let reg = /[1-9][0-9]*\/(days|hours|minutes|seconds)$/
-                if (!reg.test(formData['schedule_str'])) {
-                    err.push("Interval schedule str invalid")
-                }
-            } else if (formData["schedule"] === "crontab") {
-            }
-        }
-        try {
-            let args = $('#fargs').val()
-            if (args.replace(/(^s*)|(s*$)/g, "").length == 0) {
-                args = '[]'
-            }
-            formData.args = Array.from(JSON.parse(args))
-        } catch (e) {
-            err.push("Args must be a list!")
-        }
-        try {
-            let kwargs = $('#fkwargs').val()
-            if (kwargs.replace(/(^s*)|(s*$)/g, "").length == 0) {
-                kwargs = '{}'
-            }
-            formData.kwargs = JSON.parse(kwargs.replace(/'/g, '"'))
-        } catch (e) {
-            err.push("Kwargs must be a dict!")
+        function run_task(tid_) {
+            $.get(urls.runTask, {tid: tid_},
+                function (result) {
+                    console.log(result)
+                    if (result.state.toLowerCase() === "success") {
+                        alert(result.state)
+                    } else {
+                        alert(result.state)
+                    }
+                });
         }
 
-        data.data = formData
-        data.err = err
-        if (err.length != 0) {
-            data.valid = false
-        } else {
-            data.valid = true
+        function del_task(tid_) {
+            if (confirm("确认要删除？")) {
+                $.get(urls.delTask, {tid: tid_},
+                    function (result) {
+                        if (result.state.toLowerCase() === "success") {
+                            alert(result.state)
+                            load_task_table() // 重新加载task table
+                        } else {
+                            alert(result.state)
+                        }
+                    })
+            }
         }
-        return data
-    }
-    function clean_form() {
-        console.log('clean_form')
-        $('#fname').val('')
-        $('#fevery').val('')
-        $('#fargs').val('')
-        $('#fkwargs').val('')
-        if ($('#fschedule').val() === 'interval') {
-            $('#fschedule_str').val('')
-            $('#fschedule_str').attr('placeholder', 'n/days')
-        } else if ($('#fschedule').val() === 'crontab') {
-            $('#fschedule_str').val('')
-            $('#fschedule_str').attr('placeholder', '* * * * *')
-        }
-    }
-    function add_task() {
-        let addBtn = $('#add')
-        addBtn.attr("disabled", true)  // 关闭add按钮
-        valied_data = parse_data_form()
-        if (valied_data.valid) {
-            $.post(urls.add, { data: JSON.stringify(valied_data.data) }, function (result) {
-                if (result.state.toLowerCase() == "success") {
-                    console.log("success")
-                    alert(JSON.stringify("success"))
-                    clean_form()
-                } else {
-                    console.log("failed")
-                    alert(JSON.stringify(result.err))
-                }
-                addBtn.attr("disabled", false)  // 恢复add按钮
-                load_task_table()  // 更新任务
-            })
-        } else {
-            alert(JSON.stringify(valied_data.err))
-            addBtn.attr("disabled", false)  // 恢复add按钮
-        }
-    }
-</script>
-<script>
-    var avlTasks
-    function load_available_tasks() {
-        $.get(urls.avlTask, function (result) {
-            console.log(result)
-            if (result.state.toLowerCase() == "success") {
-                let tasks = result.data
-                avlTasks = result.data
-                opotions = ''
-                for (var index in tasks) {
-                    rowEle = `<option value=${JSON.stringify(tasks[index]['task'])}>${tasks[index]['name']}</option>`
-                    opotions += rowEle
-                }
-                $("#foption").html(opotions)
-                console.log(tasks)
+    </script>
+    <script>
+        $("#addBtn").click(() => add_task())
+
+        function parse_data_form() {
+            let err = []
+            let data = {}
+            let formData = {
+                name: $('#fname').val(),
+                task: $('#foption').val(),
+                schedule: $('#fschedule').val(),
+                schedule_str: $('#fschedule_str').val(),
+            }
+
+            if (formData["name"].replace(/(^s*)|(s*$)/g, "").length === 0) {
+                err.push("Task name cannot be null!")
+            }
+            if (formData["task"].replace(/(^s*)|(s*$)/g, "").length === 0) {
+                err.push("Task cannot be null!")
+            }
+            if (formData["schedule_str"].replace(/(^s*)|(s*$)/g, "").length === 0) {
+                err.push("Schedule str cannot be null!")
             } else {
-                alert(result.state)
+                if (formData["schedule"] === "interval") {
+                    let reg = /[1-9][0-9]*\/(days|hours|minutes|seconds)$/
+                    if (!reg.test(formData['schedule_str'])) {
+                        err.push("Interval schedule str invalid")
+                    }
+                } else if (formData["schedule"] === "crontab") {
+                }
             }
+            try {
+                let args = $('#fargs').val()
+                if (args.replace(/(^s*)|(s*$)/g, "").length === 0) {
+                    args = '[]'
+                }
+                formData.args = Array.from(JSON.parse(args))
+            } catch (e) {
+                err.push("Args must be a list!")
+            }
+            try {
+                let kwargs = $('#fkwargs').val()
+                if (kwargs.replace(/(^s*)|(s*$)/g, "").length === 0) {
+                    kwargs = '{}'
+                }
+                formData.kwargs = JSON.parse(kwargs.replace(/'/g, '"'))
+            } catch (e) {
+                err.push("Kwargs must be a dict!")
+            }
+
+            data.data = formData
+            data.err = err
+            data.valid = err.length === 0;
+            return data
+        }
+
+        function clean_form() {
+            console.log('clean_form')
+            $('#fname').val('')
+            $('#fevery').val('')
+            $('#fargs').val('')
+            $('#fkwargs').val('')
+            let fschedule = $('#fschedule')
+            let fschedule_str = $('#fschedule_str')
+            if (fschedule.val() === 'interval') {
+                fschedule_str.val('')
+                fschedule_str.attr('placeholder', 'n/days')
+            } else if (fschedule.val() === 'crontab') {
+                fschedule_str.val('')
+                fschedule_str.attr('placeholder', '* * * * *')
+            }
+        }
+
+        function add_task() {
+            let addBtn = $('#add')
+            addBtn.attr("disabled", true)  // 关闭add按钮
+            let valid_data = parse_data_form()
+            if (valid_data.valid) {
+                $.post(urls.add, {data: JSON.stringify(valid_data.data)}, function (result) {
+                    if (result.state.toLowerCase() === "success") {
+                        console.log("success")
+                        alert(JSON.stringify("success"))
+                        clean_form()
+                    } else {
+                        console.log("failed")
+                        alert(JSON.stringify(result.err))
+                    }
+                    addBtn.attr("disabled", false)  // 恢复add按钮
+                    load_task_table()  // 更新任务
+                })
+            } else {
+                alert(JSON.stringify(valid_data.err))
+                addBtn.attr("disabled", false)  // 恢复add按钮
+            }
+        }
+    </script>
+    <script>
+        let avlTasks
+
+        function load_available_tasks() {
+            $.get(urls.avlTask, function (result) {
+                console.log(result)
+                if (result.state.toLowerCase() === "success") {
+                    let tasks = result.data
+                    avlTasks = result.data
+                    let options = ''
+                    for (let index in tasks) {
+                        let rowEle = `<option value=${JSON.stringify(tasks[index]['task'])}>${tasks[index]['name']}</option>`
+                        options += rowEle
+                    }
+                    $("#foption").html(options)
+                    console.log(tasks)
+                } else {
+                    alert(result.state)
+                }
+            })
+        }
+    </script>
+    <script>
+        window.onload = () => {
+            load_available_tasks();
+            load_task_table();
+            load_result_table();
+        }
+        setInterval(load_result_table, 1000 * 30)
+    </script>
+    <script>
+        $('#fschedule').change(() => {
+            let schedule = $('#fschedule').val()
+            if (schedule === "interval") {
+                $('#fschedule_str').attr('placeholder', 'n/days')
+            } else if (schedule === "crontab") {
+                $('#fschedule_str').attr('placeholder', '* * * * *')
+            }
+            console.log(schedule)
         })
-    }
-</script>
-<script>
-    window.onload = () => { load_available_tasks(); load_task_table(); load_result_table(); }
-    setInterval(load_result_table, 1000 * 30)
-</script>
-<script>
-    $('#fschedule').change(() => {
-        let schedule = $('#fschedule').val()
-        if (schedule === "interval") {
-            $('#fschedule_str').attr('placeholder', 'n/days')
-        } else if (schedule === "crontab") {
-            $('#fschedule_str').attr('placeholder', '* * * * *')
-        }
-        console.log(schedule)
-    })
-    $('#foption').change(() => {
-        let task = $('#foption').val(), task_name, description
-        for (var index in avlTasks) {
-            if (avlTasks[index]['task'] === task) {
-                task_name = avlTasks[index]['name']
-                description = JSON.parse(avlTasks[index]['description'])
-                console.log(description)
-                break;
+        $('#foption').change(() => {
+            let task = $('#foption').val(), task_name, description
+            for (let index in avlTasks) {
+                if (avlTasks[index]['task'] === task) {
+                    task_name = avlTasks[index]['name']
+                    description = JSON.parse(avlTasks[index]['description'])
+                    console.log(description)
+                    break;
+                }
             }
-        }
-        // description.replace(/\r\n/g, "")
-        $('#fargs').attr('placeholder', description['args'])
-        $('#fkwargs').attr('placeholder', description['kwargs'])
-        $('#task_name').html(`<p>${task_name}</p>`)
-        $('#task_info').html(`<p>${description['info']}</p>`)
-        console.log(avlTasks)
-        console.log(task)
-    })
-</script>
-<script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
-</script>
+            // description.replace(/\r\n/g, "")
+            $('#fargs').attr('placeholder', description['args'])
+            $('#fkwargs').attr('placeholder', description['kwargs'])
+            $('#task_name').html(`<p>${task_name}</p>`)
+            $('#task_info').html(`<p>${description['info']}</p>`)
+            console.log(avlTasks)
+            console.log(task)
+        })
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
 {% endblock %}

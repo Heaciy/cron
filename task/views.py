@@ -3,7 +3,8 @@ import json
 from .models import AvlTask
 from celery import current_app
 from ratelimit.decorators import ratelimit
-from task.utils import dumps_kwargs_safe, generate_schedule, serialize_avl_task, serialize_result, serialize_task, parse_task
+from task.utils import dumps_kwargs_safe, generate_schedule, serialize_avl_task, serialize_result, serialize_task, \
+    parse_task
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -53,7 +54,7 @@ def get_tasks(request):
             kwargs__icontains=f"\"uid\":{request.user.id}")
         print(tasks)
         data = serialize_task(tasks)
-    return JsonResponse({"state": "success", "data": data})
+        return JsonResponse({"state": "success", "data": data})
 
 
 def get_results(request):
@@ -62,19 +63,19 @@ def get_results(request):
         results = TaskResult.objects.filter(
             task_kwargs__icontains=f"'uid': {request.user.id}")
         data = serialize_result(results)
-    return JsonResponse({"state": "success", "data": data})
+        return JsonResponse({"state": "success", "data": data})
 
 
 def get_results_by_task(request):
     """通过tid获取本用户所属的result"""
     if request.method == 'GET':
         results = TaskResult.objects.filter(
-            task_kwargs__icontains=f"'uid': {request.user.id}")\
+            task_kwargs__icontains=f"'uid': {request.user.id}") \
             .filter(
             task_kwargs__icontains=f"'tid': {request.GET.get('tid')}")
         print(results)
         data = serialize_result(results)
-    return JsonResponse({"state": "success", "data": data})
+        return JsonResponse({"state": "success", "data": data})
 
 
 @ratelimit(key='ip', rate='20/m')
@@ -129,7 +130,7 @@ def delete_task(request):  # FIXME: 改为task/delete/1, 或者post：task/delet
 
 
 @ratelimit(key='ip', rate='10/m')
-def avaible_tasks(request):
+def available_tasks(request):
     """获取当前用户所有可用tasks"""
     if request.method == 'GET':
         all_tasks = AvlTask.objects.all()

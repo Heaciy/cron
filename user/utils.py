@@ -53,7 +53,7 @@ def send_captcha(email, send_for):
         code = ''.join(random.sample(
             string.ascii_letters + string.digits, 6)).lower()
         print(f'captcha keys:{send_for}:{email}')
-        cache.set(f'{send_for}:{email}', code, timeout=30*60)
+        cache.set(f'{send_for}:{email}', code, timeout=30 * 60)
         send_mail(
             subject,
             f'captcha: {code}, valid for 30 minutes',

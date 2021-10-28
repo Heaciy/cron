@@ -12,6 +12,8 @@ from django.contrib import auth
 from django.core.cache import cache
 from django.shortcuts import redirect
 from django.urls import reverse
+
+
 # Create your views here.
 
 
@@ -71,7 +73,7 @@ def send_captcha(request):
     email = request.GET.get('email', '')
     send_for = request.GET.get('send_for', '')
     last_time = request.GET.get('last_time', 0)
-    interval = int(time.time())-last_time
+    interval = int(time.time()) - last_time
     state = _send_captcha(email, send_for)
     if state and interval > 30:  # 2/m
         return JsonResponse({'state': 'success'})

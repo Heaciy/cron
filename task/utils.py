@@ -12,7 +12,7 @@ from task.models import AvlTask
 
 def load_from_kwargs(obj, key):
     """使用getattr同时适配TaskResult和PeriodicTask"""
-    kwargs_str = getattr(obj, "task_kwargs") if hasattr(obj, "task_kwargs")\
+    kwargs_str = getattr(obj, "task_kwargs") if hasattr(obj, "task_kwargs") \
         else getattr(obj, "kwargs")
     kwargs = json.loads(kwargs_str.strip("\"").replace('\'', '\"'))
     return kwargs.get(key, None)
@@ -164,13 +164,15 @@ def get_interval_schedule(valid_str):
 
 def get_crontab_schedule(valid_str):
     # 单例模式
+    schedule = None
     args = valid_str.strip().split(' ')
     if len(args) == 5:
         schedule, _ = CrontabSchedule.objects.get_or_create(
             minute=args[0], hour=args[1], day_of_week=args[2], day_of_month=args[3], month_of_year=args[4])
     elif len(args) == 6:
         schedule, _ = CrontabSchedule.objects.get_or_create(
-            minute=args[0], hour=args[1], day_of_week=args[2], day_of_month=args[3], month_of_year=args[4], timezone=args[5])
+            minute=args[0], hour=args[1], day_of_week=args[2], day_of_month=args[3], month_of_year=args[4],
+            timezone=args[5])
     return schedule
 
 
