@@ -82,8 +82,7 @@ def serialize_task(tasks: List[PeriodicTask]) -> List[Dict]:
 
 
 def load_description_safe(description):
-    description = description.replace('\n', '').replace('\r', '')
-    description = re.sub(r' +', '', description)
+    description = json.dumps(json.loads(description))
     return description
 
 
