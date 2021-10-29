@@ -1,4 +1,3 @@
-import re
 import json
 from datetime import datetime
 from typing import Dict, List
@@ -11,22 +10,23 @@ from task.models import AvlTask
 
 
 def load_from_kwargs(obj, key):
-    """使用getattr同时适配TaskResult和PeriodicTask"""
+    """根据key从kwargs中获取value"""
+    # 使用getattr同时适配TaskResult和PeriodicTask
     kwargs_str = getattr(obj, "task_kwargs") if hasattr(obj, "task_kwargs") \
         else getattr(obj, "kwargs")
     kwargs = json.loads(kwargs_str.strip("\"").replace('\'', '\"'))
     return kwargs.get(key, None)
 
 
-def load_kwargs_from_str(str):
+def load_kwargs_from_str(kwargs_str):
     """将kwargs的str转化为json对象"""
-    kwargs = json.loads(str.strip("\"").replace('\'', '\"'))
+    kwargs = json.loads(kwargs_str.strip("\"").replace('\'', '\"'))
     return kwargs
 
 
-def load_kwargs_from_str_safe(str):
+def load_kwargs_from_str_safe(kwargs_str):
     """去除kwargs中的uid和tid"""
-    kwargs = load_kwargs_from_str(str)
+    kwargs = load_kwargs_from_str(kwargs_str)
     if 'uid' in kwargs:
         del kwargs['uid']
     if 'tid' in kwargs:
@@ -34,9 +34,9 @@ def load_kwargs_from_str_safe(str):
     return kwargs
 
 
-def load_args_from_str(str):
+def load_args_from_str(args_str):
     """将args的str转化为json对象"""
-    args = json.loads(str.strip("\"").replace('\'', '\"'))
+    args = json.loads(args_str.strip("\"").replace('\'', '\"'))
     return args
 
 
@@ -105,7 +105,7 @@ def valid_interval(sche_str):
         if int(every) > 0 and period.lower() in settings.AVL_PERIOD:
             return True
         return False
-    except Exception as e:
+    except ValueError as e:
         return False
 
 
@@ -140,7 +140,7 @@ def valid_schedule(schedule, sche_str):
         if valid_func(sche_str):
             return True
         return False
-    except Exception as e:
+    except KeyError as e:
         return False
 
 
@@ -153,18 +153,18 @@ def generate_schedule(schedule, sche_str):
     raise ValidationError
 
 
-def get_interval_schedule(valid_str):
+def get_interval_schedule(valid_sche_str):
     # 单例模式
-    every, period = valid_str.strip().split('/')
+    every, period = valid_sche_str.strip().split('/')
     schedule, _ = IntervalSchedule.objects.get_or_create(
         every=int(every), period=period)
     return schedule
 
 
-def get_crontab_schedule(valid_str):
+def get_crontab_schedule(valid_sche_str):
     # 单例模式
     schedule = None
-    args = valid_str.strip().split(' ')
+    args = valid_sche_str.strip().split(' ')
     if len(args) == 5:
         schedule, _ = CrontabSchedule.objects.get_or_create(
             minute=args[0], hour=args[1], day_of_week=args[2], day_of_month=args[3], month_of_year=args[4])
